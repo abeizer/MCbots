@@ -296,7 +296,7 @@ const RGBot = class {
    */
   async approachBlock(block, range = 10) {
     try {
-      const pathFunc = () => {
+      const pathFunc = async () => {
         console.log('Inside PathFunc')
         await this.bot.pathfinder.goto(new GoalLookAtBlock(block.position, this.bot.world, { reach: range }))
       };
