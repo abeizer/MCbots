@@ -298,7 +298,7 @@ const RGBot = class {
     try {
       const pathFunc = () => {
         console.log('Inside PathFunc')
-        this.bot.pathfinder.goto(new GoalLookAtBlock(block.position, this.bot.world, { reach: range }))
+        await this.bot.pathfinder.goto(new GoalLookAtBlock(block.position, this.bot.world, { reach: range }))
       };
       return await this.handlePathfinderTimeout(pathFunc);
     } catch (err) {
