@@ -249,7 +249,7 @@ const RGBot = class {
    * The bot will approach the given block and stop within the specified range.
    * @return { Promise<void> }
    */
-  async approachBlock(block, range = 4.5) {
+  async approachBlock(block, range = 10) {
     try {
       // this.chat(`I am approaching block at ${this.positionString(block.position)} at range ${range}`);
       await this.bot.pathfinder.goto(new GoalLookAtBlock(block.position, this.bot.world, { reach: range }))
