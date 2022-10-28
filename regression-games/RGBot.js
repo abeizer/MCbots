@@ -262,7 +262,6 @@ const RGBot = class {
     const checkPosition = () => {
       let currentPosition = this.bot.entity.position;
       let isActive = this.bot.pathfinder.isMining() || this.bot.pathfinder.isBuilding();
-
       console.log('Checking Positions:');
       console.log(`Previous: ${previousPosition} -- ${wasActive} New: ${currentPosition} -- ${isActive}`)
       if(currentPosition.equals(previousPosition, 0.01) && !wasActive && !isActive ) {
@@ -272,17 +271,17 @@ const RGBot = class {
         // stop pathfinder and remove its current goal
         // this will throw an exception that we need to handle
         this.bot.pathfinder.stop();
-        this.bot.pathfinder.setGoal(null).catch((err) => {console.log('Cancelled Pathing', err)});
+        (this.bot.pathfinder.setGoal(null)).catch((err) => {console.log('Cancelled Pathing', err)});
       } else {
         previousPosition = currentPosition;
         wasActive = isActive;
       }
     }
-
-    const timer = setInterval(checkPosition, 5_000);
+    
     let pathResolved = undefined;
+    const timer = setInterval(checkPosition, 5000);
+    console.log('Waiting for path to resolve');
     try {
-      console.log('Waiting for path to resolve');
       pathResolved = await pathFunc();
     } finally {
       console.log('Clearing timer');
@@ -298,6 +297,7 @@ const RGBot = class {
   async approachBlock(block, range = 10) {
     try {
       const pathFunc = () => {
+        console.log('Inside PathFunc')
         this.bot.pathfinder.goto(new GoalLookAtBlock(block.position, this.bot.world, { reach: range }))
       };
       return await this.handlePathfinderTimeout(pathFunc);
