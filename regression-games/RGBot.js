@@ -259,7 +259,7 @@ const RGBot = class {
     // This function will run once every 5 seconds. It compares the bot's previous position to the current one,
     // and will record that we are 'stuck' if the bot has not moved and isn't actively performing any actions
     // that may require it to remain stationary (mining & building);
-    function checkPosition = () => {
+    const checkPosition = () => {
       let currentPosition = this.bot.entity.position;
       let isActive = this.bot.pathfinder.isMining() || this.bot.pathfinder.isBuilding();
 
