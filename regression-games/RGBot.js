@@ -268,9 +268,8 @@ const RGBot = class {
         stuck = true;
         console.log('STUCK! STUCK! STUCK!');
         // stop pathfinder and remove its current goal
-        // this will throw an exception that we need to handle
         this.bot.pathfinder.stop();
-        (this.bot.pathfinder.setGoal(null)).catch((err) => {console.log('Cancelled Pathing', err)});
+        this.bot.pathfinder.setGoal(null);
       } else {
         previousPosition = currentPosition;
         wasActive = isActive;
