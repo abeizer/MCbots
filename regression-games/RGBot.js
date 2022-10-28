@@ -1,6 +1,6 @@
 const mineflayer = require('mineflayer');
 const { pathfinder, Movements } = require('mineflayer-pathfinder');
-const { GoalNear, GoalBlock, GoalPlaceBlock, GoalGetToBlock, GoalLookAtBlock, GoalXZ, GoalY, GoalInvert, GoalFollow } = require('mineflayer-pathfinder').goals
+const { GoalNear, GoalBlock, GoalPlaceBlock, GoalLookAtBlock, GoalXZ, GoalY, GoalInvert, GoalFollow } = require('mineflayer-pathfinder').goals
 const { Vec3 } = require('vec3');
 
 
@@ -252,7 +252,7 @@ const RGBot = class {
   async approachBlock(block, range = 10) {
     try {
       // this.chat(`I am approaching block at ${this.positionString(block.position)} at range ${range}`);
-      await this.bot.pathfinder.goto(new GoalGetToBlock(block.position.x, block.position.y, block.position.z));
+      await this.bot.pathfinder.goto(new GoalLookAtBlock(block.position, this.bot.world, { reach: range }))
     } catch (err) {
       console.error('Error going to a block', err)
     }
