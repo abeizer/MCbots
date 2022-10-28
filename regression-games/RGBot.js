@@ -262,8 +262,7 @@ const RGBot = class {
     const checkPosition = () => {
       let currentPosition = this.bot.entity.position;
       let isActive = this.bot.pathfinder.isMining() || this.bot.pathfinder.isBuilding();
-      console.log('Checking Positions:');
-      console.log(`Previous: ${previousPosition} -- ${wasActive} New: ${currentPosition} -- ${isActive}`)
+      console.log(`Checking Positions... Previous: ${previousPosition} -- ${wasActive} New: ${currentPosition} -- ${isActive}`)
       if(currentPosition.equals(previousPosition, 0.01) && !wasActive && !isActive ) {
         // if the bot hasn't moved or performed other actions then we are stuck
         stuck = true;
@@ -280,11 +279,9 @@ const RGBot = class {
     
     let pathResolved = undefined;
     const timer = setInterval(checkPosition, 5000);
-    console.log('Waiting for path to resolve');
     try {
       pathResolved = await pathFunc();
     } finally {
-      console.log('Clearing timer');
       clearInterval(timer);
       return !stuck;
     }
@@ -297,7 +294,6 @@ const RGBot = class {
   async approachBlock(block, range = 10) {
     try {
       const pathFunc = async () => {
-        console.log('Inside PathFunc')
         await this.bot.pathfinder.goto(new GoalLookAtBlock(block.position, this.bot.world, { reach: range }))
       };
       return await this.handlePathfinderTimeout(pathFunc);
