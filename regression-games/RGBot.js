@@ -245,16 +245,64 @@ const RGBot = class {
     return result;
   }
 
+
+  async handlePathfinderTimeout(pathFunc) {
+    // attempt pathfinding
+    // if we haven't moved in over 5 seconds, and the bot isn't interacting with something or digging
+    // then we should assume that pathfinding has gotten stuck and 'cancel' the movement
+    let previousPosition = this.bot.entity.position;
+    let wasActive = false;
+    let stuck = false;
+
+    console.log('Handling Pathfinder Timeout')
+    
+    // This function will run once every 5 seconds. It compares the bot's previous position to the current one,
+    // and will record that we are 'stuck' if the bot has not moved and isn't actively performing any actions
+    // that may require it to remain stationary (mining & building);
+    function checkPosition = () => {
+      let currentPosition = this.bot.entity.position;
+      let isActive = this.bot.pathfinder.isMining() || this.bot.pathfinder.isBuilding();
+
+      console.log('Checking Positions:');
+      console.log(`Previous: ${previousPosition} -- ${wasActive} New: ${currentPosition} -- ${isActive}`)
+      if(currentPosition.equals(previousPosition, 0.01) && !wasActive && !isActive ) {
+        // if the bot hasn't moved or performed other actions then we are stuck
+        stuck = true;
+        console.log('STUCK! STUCK! STUCK!');
+        // stop pathfinder and remove its current goal
+        // this will throw an exception that we need to handle
+        this.bot.pathfinder.stop();
+        this.bot.pathfinder.setGoal(null).catch((err) => {console.log('Cancelled Pathing', err)});
+      } else {
+        previousPosition = currentPosition;
+        wasActive = isActive;
+      }
+    }
+
+    const timer = setInterval(checkPosition, 5_000);
+    let pathResolved = undefined;
+    try {
+      console.log('Waiting for path to resolve');
+      pathResolved = await pathFunc();
+    } finally {
+      console.log('Clearing timer');
+      clearInterval(timer);
+      return !stuck;
+    }
+  }
+  
   /**
    * The bot will approach the given block and stop within the specified range.
    * @return { Promise<void> }
    */
   async approachBlock(block, range = 10) {
     try {
-      // this.chat(`I am approaching block at ${this.positionString(block.position)} at range ${range}`);
-      await this.bot.pathfinder.goto(new GoalLookAtBlock(block.position, this.bot.world, { reach: range }))
+      const pathFunc = () => {
+        this.bot.pathfinder.goto(new GoalLookAtBlock(block.position, this.bot.world, { reach: range }))
+      };
+      return await this.handlePathfinderTimeout(pathFunc);
     } catch (err) {
-      console.error('Error going to a block', err)
+      console.error('Error going to a block', err);
     }
   }
 
