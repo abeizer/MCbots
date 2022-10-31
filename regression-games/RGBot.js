@@ -354,7 +354,10 @@ const RGBot = class {
           // then stop the bot
           if (this.bot.pathfinder.isMining() && !this.bot.targetDigBlock) {
             console.log('Stopping Current Dig');
-            this.bot.stopDigging();
+            await this.bot.stopDigging();
+            await this.bot.stopDigging();
+            await this.bot.stopDigging();
+            await this.bot.stopDigging();
           }
         }
       }
