@@ -349,7 +349,7 @@ const RGBot = class {
       this.equipBestHarvestTool(block);
 
       const checkForInfiniteDig = (reason) => {
-        if (reason == 'block_updated' || reason == dig_error) {
+        if (reason == 'block_updated' || reason == 'dig_error') {
           // if bot is still digging but the target block no longer exists
           // then stop the bot
           if (this.bot.pathfinder.isMining() && !this.bot.targetDigBlock) {
