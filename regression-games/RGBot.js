@@ -42,7 +42,8 @@ const RGBot = class {
   /**
    * Make the bot randomly wander around.
    * minRange -> maxRange X and minRange -> maxRange Z from the current position
-   * @return { Promise<void> }
+   * Returns true if the bot successfully reached its wander goal, else returns false.
+   * @return { boolean }
    */
   async wander(minRange = 10, maxRange = 10) {
     if (minRange < 1) {
@@ -55,7 +56,11 @@ const RGBot = class {
     let zRange = (minRange + (Math.random() * (maxRange - minRange))) * (Math.random() < 0.5 ? -1 : 1);
     let newX = this.bot.entity.position.x + xRange;
     let newZ = this.bot.entity.position.z + zRange;
-    await this.bot.pathfinder.goto(new GoalXZ(newX, newZ));
+
+    const pathFunc = async () => {
+      await this.bot.pathfinder.goto(new GoalXZ(newX, newZ));
+    };
+    return this.handlePath(pathFunc);
   }
 
   /**
@@ -556,7 +561,7 @@ const RGBot = class {
    * @return { Promise<void> }
    */
   async holdItem(itemName) {
-    const itemId = await this.getInventoryItemId(itemName);
+    const itemId = this.getInventoryItemId(itemName);
     if (itemId) {
       await this.bot.equip(itemId, 'hand');
     }

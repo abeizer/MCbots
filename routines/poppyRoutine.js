@@ -15,12 +15,14 @@ function gatherPoppiesRoutine(rg, bot) {
       if (await rg.findBlock('Poppy', true, false, 50, stuck >= 1)) {
         completedDig = await rg.findAndDigBlock('Poppy', true, false, 50, stuck >= 1);
       }
-
       if (!completedDig) {
+        stuck++;
         // if the bot couldn't find a poppy or failed to collect it, 
         // have it wander for a bit before trying again
-        await rg.wander();
-        stuck++;
+        let didWander = false;
+        while(!didWander) {
+          didWander = await rg.wander();
+        }
       } else {
         stuck = 0;
       }
