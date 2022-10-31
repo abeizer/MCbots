@@ -267,7 +267,6 @@ const RGBot = class {
         // stop pathfinder and remove its current goal
         this.bot.pathfinder.stop();
         this.bot.pathfinder.setGoal(null);
-        throw 'Pathfinding interrupted. Bot is stuck';
       } else {
         previousPosition = currentPosition;
         wasActive = isActive;
@@ -279,6 +278,7 @@ const RGBot = class {
       await pathFunc();
     } finally {
       clearInterval(timer);
+      console.log('returning stuck: ' + stuck);
       return !stuck;
     }
   }
