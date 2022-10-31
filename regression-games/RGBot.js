@@ -346,14 +346,30 @@ const RGBot = class {
   async digBlock(block) {
     if (block) {
       console.log(`I am digging ${block.displayName || block.name}`);
-
-      // dig the block
       this.equipBestHarvestTool(block);
-      await this.bot.dig(block);
-    }
-  }
 
-  /**
+      const checkForInfiniteDig = (reason) => {
+        if (reason == 'block_updated' || reason == dig_error) {
+          // if bot is still digging but the target block no longer exists
+          // then stop the bot
+          if (this.bot.pathfinder.isMining() && !this.bot.targetDigBlock) {
+            console.log('Stopping Current Dig');
+            this.bot.stopDigging();
+          }
+        }
+      }
+
+      // we can use this event to indicate when we encounter any errors while digging
+      // and stop the bot's dig so we don't get locked into a dig that will never resolve.
+      this.bot.on('path_reset', checkForInfiniteDig);
+      await this.bot.dig(block);
+
+      console.log('dig finished, unsubscribing from events');
+      this.bot.off('path_reset', checkForInfiniteDig);
+    }
+   
+   
+   **
    * Locate and harvest the closest Block of a given type within the specified range from the bot. 
    * This method will equip the most appropriate tool in the bot's inventory for this block type.
    * Returns true if a block was found and digging was successful.
@@ -392,9 +408,9 @@ const RGBot = class {
       }
     }
     return result;
-  }
-
-  /**
+   
+   
+   **
    * Locate the closest item with the given name within the specified range.
    * If item was not found, will return null.
    * @return { Item | null }
@@ -411,8 +427,8 @@ const RGBot = class {
       }
     });
   }
-
-
+  
+  
   /**
   * Approach the item. If the bot has space in its inventory, the item will be picked up.
   * @param item
@@ -425,9 +441,9 @@ const RGBot = class {
     } else {
       this.chat('No Item to approach')
     }
-  }
-
-  /**
+   
+   
+   **
    * This will drop up to the quantity requested of any inventory item matching itemName.  
    * Ex. If you request to drop 'log', any type of log will be dropped to fulfill this request.
    * To drop all of an item, call this method using the default quantity of -1 
@@ -468,7 +484,7 @@ const RGBot = class {
       this.chat(`I don't have any ${itemName} to drop`)
     }
   }
-
+  
   /**
   * Return the id of an item in the bot's inventory.
   * @return { number | null }
@@ -478,9 +494,9 @@ const RGBot = class {
     if (itemId) {
       return this.bot.inventory.findInventoryItem((itemId));
     }
-  }
-
-  /**
+   
+   
+   **
    * Return how many of a specific item the bot is holding in its inventory. 
    * @return { int }
    */
@@ -495,9 +511,9 @@ const RGBot = class {
     });
     console.log(`Bot has ${quantityAvailable} of item ${itemName}`);
     return quantityAvailable;
-  }
-
-  /**
+   
+   
+   **
    * Returns true if the bot has at least one of this item in its inventory. 
    * Otherwise, returns false.
    * @param quantity check if inventory contains at least the specified quantity
@@ -508,9 +524,9 @@ const RGBot = class {
       quantity = 1;
     }
     return this.getInventoryItemQuantity(itemName) >= quantity;
-  }
-
-  /**
+   
+   
+   **
    * Attempts to craft an item. Returns the created item's instance in the bot's inventory.
    * The bot must have enough materials to make at least one of these items, or else recipe lookup will fail.
    * @param itemName
@@ -536,9 +552,9 @@ const RGBot = class {
       }
     }
     return result;
-  }
-
-  /**
+   
+   
+   **
    * Attempts to equip an item to the bot's hand. The bot must have the item in its inventory to equip it.
    * @param itemName
    * @return { Promise<void> }
