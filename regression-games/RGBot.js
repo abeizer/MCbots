@@ -254,8 +254,6 @@ const RGBot = class {
     let wasActive = false;
     let stuck = false;
 
-    console.log('Handling Pathfinder Timeout')
-    
     // This function will run once every 5 seconds. It compares the bot's previous position to the current one,
     // and will record that we are 'stuck' if the bot has not moved and isn't actively performing any actions
     // that may require it to remain stationary (mining & building);
@@ -263,31 +261,31 @@ const RGBot = class {
       let currentPosition = this.bot.entity.position;
       let isActive = this.bot.pathfinder.isMining() || this.bot.pathfinder.isBuilding();
       console.log(`Checking Positions... Previous: ${previousPosition} -- ${wasActive} New: ${currentPosition} -- ${isActive}`)
-      if(currentPosition.equals(previousPosition, 0.01) && !wasActive && !isActive ) {
+      if (currentPosition.equals(previousPosition, 0.01) && !wasActive && !isActive) {
         // if the bot hasn't moved or performed other actions then we are stuck
         stuck = true;
-        console.log('STUCK! STUCK! STUCK!');
         // stop pathfinder and remove its current goal
         this.bot.pathfinder.stop();
         this.bot.pathfinder.setGoal(null);
+        throw 'Pathfinding interrupted. Bot is stuck';
       } else {
         previousPosition = currentPosition;
         wasActive = isActive;
       }
     }
-    
-    let pathResolved = undefined;
+
     const timer = setInterval(checkPosition, 5000);
     try {
-      pathResolved = await pathFunc();
+      await pathFunc();
     } finally {
       clearInterval(timer);
       return !stuck;
     }
   }
-  
+
   /**
    * The bot will approach the given block and stop within the specified range.
+   * Returns whether pathing was successfully completed.
    * @return { Promise<void> }
    */
   async approachBlock(block, range = 10) {
