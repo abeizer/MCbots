@@ -155,7 +155,7 @@ const RGBot = class {
     } else {
       this.chat(`I am approaching ${(entity.displayName || entity.name)} at range ${range}`);
       const goal = new GoalNear(entity.position.x, entity.position.y, entity.position.z, range);
-      const pathFunc = () => {
+      const pathFunc = async () => {
         await this.bot.pathfinder.goto(goal);
       };
       return this.handlePath(pathFunc);
