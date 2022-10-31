@@ -145,15 +145,20 @@ const RGBot = class {
 
   /**
    * The bot will approach the given entity and stop within the specified range.
-   * @return { Promise<void> }
+   * Returns true if the bot successfully reached the entity, else returns false.
+   * @return { boolean }
    */
   async approachEntity(entity, range = 1) {
     if (!entity) {
       this.chat(`I cannot see ${(entity.displayName || entity.name)}`);
+      return false;
     } else {
       this.chat(`I am approaching ${(entity.displayName || entity.name)} at range ${range}`);
       const goal = new GoalNear(entity.position.x, entity.position.y, entity.position.z, range);
-      this.bot.pathfinder.goto(goal);
+      const pathFunc = () => {
+        await this.bot.pathfinder.goto(goal);
+      };
+      return this.handlePath(pathFunc);
     }
   }
 
