@@ -348,7 +348,7 @@ const RGBot = class {
       console.log(`I am digging ${block.displayName || block.name}`);
       this.equipBestHarvestTool(block);
 
-      const checkForInfiniteDig = (reason) => {
+      const checkForInfiniteDig = async (reason) => {
         if (reason == 'block_updated' || reason == 'dig_error') {
           // if bot is still digging but the target block no longer exists
           // then stop the bot
