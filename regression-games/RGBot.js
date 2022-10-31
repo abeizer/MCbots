@@ -261,7 +261,7 @@ const RGBot = class {
       let currentPosition = this.bot.entity.position;
       let isActive = this.bot.pathfinder.isMining() || this.bot.pathfinder.isBuilding();
       console.log(`Checking Positions... Previous: ${previousPosition} -- ${wasActive} New: ${currentPosition} -- ${isActive}`)
-      if (currentPosition.equals(previousPosition, 0.01) && !wasActive && !isActive) {
+      if (currentPosition.equals(previousPosition, 0.5) && !wasActive && !isActive) {
         // if the bot hasn't moved or performed other actions then we are stuck
         // stop pathfinder and remove its current goal
         console.log('HANDLE: STOPPING PATHFINDER')
