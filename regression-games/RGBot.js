@@ -358,7 +358,6 @@ const RGBot = class {
             await this.bot.stopDigging();
             await this.bot.stopDigging();
             await this.bot.stopDigging();
-            await this.bot.stopDigging();
           }
         }
       }
