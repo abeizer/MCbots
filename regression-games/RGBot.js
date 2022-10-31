@@ -264,7 +264,6 @@ const RGBot = class {
       if (currentPosition.equals(previousPosition, 0.5) && !wasActive && !isActive) {
         // if the bot hasn't moved or performed other actions then we are stuck
         // stop pathfinder and remove its current goal
-        console.log('HANDLE: STOPPING PATHFINDER')
         stuck = true;
         this.bot.pathfinder.stop();
         this.bot.pathfinder.setGoal(null);
@@ -276,11 +275,9 @@ const RGBot = class {
 
     const timer = setInterval(checkPosition, 5000);
     try {
-      let pathingCompleted = await pathFunc();
-      console.log('HANDLE: PATHING COMPLETED? ', !stuck);
+      await pathFunc();
     } finally {
       clearInterval(timer);
-      console.log('returning stuck: ' + stuck);
       return !stuck;
     }
   }
@@ -296,7 +293,6 @@ const RGBot = class {
         await this.bot.pathfinder.goto(new GoalLookAtBlock(block.position, this.bot.world, { reach: range }))
       };
       const success = await this.handlePathfinderTimeout(pathFunc);
-      console.log('APPROACH: WERE WE SUCCESSFUL? ', success);
       return success;
     } catch (err) {
       console.error('APPROACH: Error going to a block', err);
@@ -372,25 +368,24 @@ const RGBot = class {
     const block = this.findBlock(blockType, exactMatch, onlyFindTopBlocks, maxDistance, skipClosest);
     if (block) {
       try {
-        const success = await this.approachBlock(block);
-        console.log('FIND: SUCCESS? ', success);
+        const approachSuccess = await this.approachBlock(block);
+        if (approachSuccess) {
+          await this.digBlock(block);
 
-        await this.digBlock(block);
-        console.log('FIND: OOPS DIDNT STOP', success);
-
-        // pick up the block
-        await this.bot.waitForTicks(25); // give the server time to create drops
-        let droppedItem = null;
-        if (block.drops && block.drops.length > 0) {
-          droppedItem = await this.findItemOnGround(block.drops[0]);
+          // pick up the block
+          let droppedItem = null;
+          await this.bot.waitForTicks(25); // give the server time to create drops
+          if (block.drops && block.drops.length > 0) {
+            droppedItem = await this.findItemOnGround(block.drops[0]);
+          }
+          else {
+            droppedItem = await this.findItemOnGround(block.name || block.displayName);
+          }
+          if (droppedItem) {
+            await this.approachItem(droppedItem);
+          }
+          result = true;
         }
-        else {
-          droppedItem = await this.findItemOnGround(block.name || block.displayName);
-        }
-        if (droppedItem) {
-          await this.approachItem(droppedItem);
-        }
-        result = true;
       }
       catch (err) {
         console.error('Error digging a block', err)
