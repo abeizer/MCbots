@@ -5,15 +5,15 @@ function gatherPoppiesRoutine(rg, bot) {
   const startRoutine = async () => {
 
     // track how many times we get stuck trying to collect the same poppy
-    // we will try up to 3 times before moving onto a different one.
+    // we will try up to 2 times before moving onto a different one.
     let stuck = 0;
 
     // goal: collect 20 poppies
     while (rg.getInventoryItemQuantity('Poppy') < 20) {
 
       let completedDig = false;
-      if (await rg.findBlock('Poppy', true, false, 50, stuck >= 2)) {
-        completedDig = await rg.findAndDigBlock('Poppy', true, false, 50, stuck >= 2);
+      if (await rg.findBlock('Poppy', true, false, 50, stuck >= 1)) {
+        completedDig = await rg.findAndDigBlock('Poppy', true, false, 50, stuck >= 1);
       }
 
       if (!completedDig) {
