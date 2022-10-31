@@ -255,7 +255,7 @@ const RGBot = class {
     let stuck = false;
 
     // This function will run once every 5 seconds. It compares the bot's previous position to the current one,
-    // and will record that we are 'stuck' if the bot has not moved and isn't actively performing any actions
+    // and will return that we are 'stuck' if the bot has not moved and isn't actively performing any actions
     // that may require it to remain stationary (mining & building);
     const checkPosition = () => {
       let currentPosition = this.bot.entity.position;
@@ -263,8 +263,9 @@ const RGBot = class {
       console.log(`Checking Positions... Previous: ${previousPosition} -- ${wasActive} New: ${currentPosition} -- ${isActive}`)
       if (currentPosition.equals(previousPosition, 0.01) && !wasActive && !isActive) {
         // if the bot hasn't moved or performed other actions then we are stuck
-        stuck = true;
         // stop pathfinder and remove its current goal
+        console.log('HANDLE: STOPPING PATHFINDER')
+        stuck = true;
         this.bot.pathfinder.stop();
         this.bot.pathfinder.setGoal(null);
       } else {
@@ -275,7 +276,8 @@ const RGBot = class {
 
     const timer = setInterval(checkPosition, 5000);
     try {
-      await pathFunc();
+      let pathingCompleted = await pathFunc();
+      console.log('HANDLE: PATHING COMPLETED? ', !stuck);
     } finally {
       clearInterval(timer);
       console.log('returning stuck: ' + stuck);
@@ -293,9 +295,11 @@ const RGBot = class {
       const pathFunc = async () => {
         await this.bot.pathfinder.goto(new GoalLookAtBlock(block.position, this.bot.world, { reach: range }))
       };
-      return await this.handlePathfinderTimeout(pathFunc);
+      const success = await this.handlePathfinderTimeout(pathFunc);
+      console.log('APPROACH: WERE WE SUCCESSFUL? ', success);
+      return success;
     } catch (err) {
-      console.error('Error going to a block', err);
+      console.error('APPROACH: Error going to a block', err);
     }
   }
 
@@ -368,8 +372,11 @@ const RGBot = class {
     const block = this.findBlock(blockType, exactMatch, onlyFindTopBlocks, maxDistance, skipClosest);
     if (block) {
       try {
-        await this.approachBlock(block);
+        const success = await this.approachBlock(block);
+        console.log('FIND: SUCCESS? ', success);
+
         await this.digBlock(block);
+        console.log('FIND: OOPS DIDNT STOP', success);
 
         // pick up the block
         await this.bot.waitForTicks(25); // give the server time to create drops
