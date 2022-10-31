@@ -246,24 +246,28 @@ const RGBot = class {
   }
 
 
-  async handlePathfinderTimeout(pathFunc) {
-    // attempt pathfinding
-    // if we haven't moved in over 5 seconds, and the bot isn't interacting with something or digging
-    // then we should assume that pathfinding has gotten stuck and 'cancel' the movement
+ /**
+  * Attempt pathfinding. If the bot becomes 'stuck' then cancel pathfinding.
+  * The bot is considered 'stuck' if it fails to move or perform mining/building actions during a specified interval. 
+  * Returns true if that path is allowed to complete, else returns false.
+  * @param pathFunc - a function utilizing pathfinder to move the bot
+  * @param interval - How long in ms a bot must be inactive to be considered 'stuck' 
+  * @return { boolean }
+  */
+  async handlePath(pathFunc, interval = 5000 ) {
+
     let previousPosition = this.bot.entity.position;
-    let wasActive = false;
+    let wasActive = true;
     let stuck = false;
 
-    // This function will run once every 5 seconds. It compares the bot's previous position to the current one,
-    // and will return that we are 'stuck' if the bot has not moved and isn't actively performing any actions
-    // that may require it to remain stationary (mining & building);
     const checkPosition = () => {
       let currentPosition = this.bot.entity.position;
       let isActive = this.bot.pathfinder.isMining() || this.bot.pathfinder.isBuilding();
       console.log(`Checking Positions... Previous: ${previousPosition} -- ${wasActive} New: ${currentPosition} -- ${isActive}`)
-      if (currentPosition.equals(previousPosition, 0.5) && !wasActive && !isActive) {
+      if (currentPosition.equals(previousPosition, 0.005) && !wasActive && !isActive) {
         // if the bot hasn't moved or performed other actions then we are stuck
         // stop pathfinder and remove its current goal
+        console.log('Bot is stuck - cancel pathing');
         stuck = true;
         this.bot.pathfinder.stop();
         this.bot.pathfinder.setGoal(null);
@@ -273,7 +277,7 @@ const RGBot = class {
       }
     }
 
-    const timer = setInterval(checkPosition, 5000);
+    const timer = setInterval(checkPosition, interval);
     try {
       await pathFunc();
     } finally {
@@ -292,10 +296,9 @@ const RGBot = class {
       const pathFunc = async () => {
         await this.bot.pathfinder.goto(new GoalLookAtBlock(block.position, this.bot.world, { reach: range }))
       };
-      const success = await this.handlePathfinderTimeout(pathFunc);
-      return success;
+      return this.handlePath(pathFunc);
     } catch (err) {
-      console.error('APPROACH: Error going to a block', err);
+      console.error('Error approaching block', err);
     }
   }
 
@@ -347,25 +350,19 @@ const RGBot = class {
     if (block) {
       console.log(`I am digging ${block.displayName || block.name}`);
       this.equipBestHarvestTool(block);
-
       const checkForInfiniteDig = async (reason) => {
         if (reason == 'block_updated' || reason == 'dig_error') {
-          // if bot is still digging but the target block no longer exists
-          // then stop the bot
+          // if bot is still digging but the target block no longer exists then stop the bot
           if (this.bot.pathfinder.isMining() && !this.bot.targetDigBlock) {
-            console.log('Stopping Current Dig');
+            console.log('Cancelling current dig because target block no longer exists.');
             this.bot.stopDigging();
             this.bot.pathfinder.stop()
             this.bot.pathfinder.setGoal(null)
           }
         }
       }
-      // we can use this event to indicate when we encounter any errors while digging
-      // and stop the bot's dig so we don't get locked into a dig that will never resolve.
       this.bot.on('path_reset', checkForInfiniteDig);
       await this.bot.dig(block);
-
-      console.log('dig finished, unsubscribing from events');
       this.bot.off('path_reset', checkForInfiniteDig);
     }
   }
@@ -385,11 +382,8 @@ const RGBot = class {
     const block = this.findBlock(blockType, exactMatch, onlyFindTopBlocks, maxDistance, skipClosest);
     if (block) {
       try {
-        const approachSuccess = await this.approachBlock(block);
-        if (approachSuccess) {
+        if (await this.approachBlock(block)) {
           await this.digBlock(block);
-
-          // pick up the block
           let droppedItem = null;
           await this.bot.waitForTicks(25); // give the server time to create drops
           if (block.drops && block.drops.length > 0) {
@@ -398,6 +392,7 @@ const RGBot = class {
           else {
             droppedItem = await this.findItemOnGround(block.name || block.displayName);
           }
+          
           if (droppedItem) {
             await this.approachItem(droppedItem);
           }
@@ -405,7 +400,7 @@ const RGBot = class {
         }
       }
       catch (err) {
-        console.error('Error digging a block', err)
+        console.error('Error finding and digging block', err)
       }
     }
     return result;
