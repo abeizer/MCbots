@@ -289,11 +289,11 @@ const RGBot = class {
    */
   async approachBlock(block, range = 10) {
     try {
-      const pathFunc = async () => {
-        await this.bot.pathfinder.goto(new GoalLookAtBlock(block.position, this.bot.world, { reach: range }))
-      };
-      const success = await this.handlePathfinderTimeout(pathFunc);
-      return success;
+      // const pathFunc = async () => {
+      await this.bot.pathfinder.goto(new GoalLookAtBlock(block.position, this.bot.world, { reach: range }))
+      // };
+      // const success = await this.handlePathfinderTimeout(pathFunc);
+      return true;
     } catch (err) {
       console.error('APPROACH: Error going to a block', err);
     }
