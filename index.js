@@ -14,8 +14,8 @@ function configureBot(bot) {
   const rg = new RGBot(bot);
   rg.setDebug(true);
 
-  // routines.gatherPoppiesRoutine(rg, bot);
-  routines.gatherLogsRoutine(rg, bot);
+  routines.gatherPoppiesRoutine(rg, bot);
+  // routines.gatherLogsRoutine(rg, bot);
 
   // bot.on('whisper', (...args) => {
   //   if (args[0] === bot.username || args[0] === 'you') { return };
