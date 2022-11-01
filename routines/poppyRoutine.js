@@ -20,7 +20,7 @@ function gatherPoppiesRoutine(rg, bot) {
         // if the bot couldn't find a poppy or failed to collect it, 
         // have it wander for a bit before trying again
         let didWander = false;
-        while(!didWander) {
+        while (!didWander) {
           didWander = await rg.wander();
         }
       } else {

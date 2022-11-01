@@ -181,7 +181,7 @@ const RGBot = class {
       const pathFunc = async () => {
         await this.bot.pathfinder.goto(goal);
       };
-      return this.handlePath(pathFunc);
+      return await this.handlePath(pathFunc);
     }
   }
 
@@ -425,8 +425,8 @@ const RGBot = class {
     const block = this.findBlock(blockType, exactMatch, onlyFindTopBlocks, maxDistance, skipClosest);
     if (block) {
       try {
-        if (this.approachBlock(block)) {
-          this.digBlock(block);
+        if (await this.approachBlock(block)) {
+          await this.digBlock(block);
           let droppedItem = null;
           await this.bot.waitForTicks(25); // give the server time to create drops
           if (block.drops && block.drops.length > 0) {
