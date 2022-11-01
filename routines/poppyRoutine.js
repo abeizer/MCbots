@@ -12,8 +12,8 @@ function gatherPoppiesRoutine(rg, bot) {
     while (rg.getInventoryItemQuantity('Poppy') < 20) {
 
       let completedDig = false;
-      if (await rg.findBlock('Poppy', true, false, 50, stuck >= 1)) {
-        completedDig = await rg.findAndDigBlock('Poppy', true, false, 50, stuck >= 1);
+      if (await rg.findBlock('Poppy', {exactMatch: true, skipClosest: stuck >= 1})) {
+        completedDig = await rg.findAndDigBlock('Poppy', {exact: true, skipClosest: stuck >= 1});
       }
       if (!completedDig) {
         stuck++;
@@ -40,7 +40,7 @@ function gatherPoppiesRoutine(rg, bot) {
 
   // The bot will announce whenever it collects a Poppy
   bot.on('playerCollect', async (collector, collected) => {
-    if (collector.username == bot.username && rg.getItemName(collected) == 'Poppy') {
+    if (collector.username === bot.username && rg.getItemName(collected) === 'Poppy') {
       rg.chat('I collected a Poppy.');
     }
   });

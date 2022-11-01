@@ -9,9 +9,9 @@ function gatherLogsRoutine(rg, bot) {
     // If we don't have one, then we need 4 planks to craft it.
     // We can get our planks from one log if needed.
     if (!rg.inventoryContainsItem('crafting_table')) {
-      if (!rg.inventoryContainsItem('spruce_planks', 4)) {
+      if (!rg.inventoryContainsItem('spruce_planks', {quantity: 4})) {
         if (!rg.inventoryContainsItem('spruce_log')) {
-          await rg.findAndDigBlock('spruce_log', true);
+          await rg.findAndDigBlock('spruce_log', {exactMatch: true});
         }
         await rg.craftItem('spruce_planks');
       }
@@ -21,36 +21,36 @@ function gatherLogsRoutine(rg, bot) {
     // Next, sticks:
     // If we don't have 4 of them, then we need 2 planks to craft them.
     // We can get our planks from one log if needed.
-    if (!rg.inventoryContainsItem('stick', 4)) {
-      if (!rg.inventoryContainsItem('spuce_planks', 2)) {
+    if (!rg.inventoryContainsItem('stick', {quantity: 4})) {
+      if (!rg.inventoryContainsItem('spuce_planks', {quantity: 2})) {
         if (!rg.inventoryContainsItem('spruce_log')) {
-          await rg.findAndDigBlock('spruce_log', true);
+          await rg.findAndDigBlock('spruce_log', {exactMatch: true});
         }
         await rg.craftItem('spruce_planks');
       }
-      await rg.craftItem('stick', 1); // and 4 sticks
+      await rg.craftItem('stick'); // and 4 sticks
     }
 
     // Lastly, planks:
     // If we don't have 6 of them, then we need 2 logs to craft them.
-    if (!rg.inventoryContainsItem('spruce_planks', 6)) {
+    if (!rg.inventoryContainsItem('spruce_planks', {quantity: 6})) {
       const logsCarried = rg.getInventoryItemQuantity('spruce_log');
       const logsNeeded = (rg.getInventoryItemQuantity('spruce_planks')) >= 2 ? 1 : 2;
       for (let i = logsCarried; i < logsNeeded; i++) {
-        await rg.findAndDigBlock('spruce_log', true);
+        await rg.findAndDigBlock('spruce_log', {exactMatch: true});
       }
-      await rg.craftItem('spruce_planks', logsNeeded);
+      await rg.craftItem('spruce_planks', {quantity: logsNeeded});
     }
 
     // Now we are going to make the axes
     // Locate a spot to place the craftingTable, place it, then stand next to it 
-    const ground = rg.findBlock('grass', false, true) || rg.findBlock('dirt', false, true);
+    const ground = rg.findBlock('grass', {onlyFindTopBlocks: true}) || rg.findBlock('dirt', {onlyFindTopBlocks: true});
     await rg.placeBlock('crafting_table', ground);
     const placedTable = await rg.findBlock('crafting_table');
     await rg.approachBlock(placedTable);
 
     // Craft 2 axes and equip one of them, then gather the crafting table
-    await rg.craftItem('wooden_axe', 2, placedTable);
+    await rg.craftItem('wooden_axe', {quantity: 2, craftingTable: placedTable});
     await rg.holdItem('wooden_axe');
     await rg.findAndDigBlock('crafting_table');
   }
@@ -59,9 +59,9 @@ function gatherLogsRoutine(rg, bot) {
     let logGathered = false;
     while (!logGathered) {
       // attempt to find a log
-      const locatedLog = await rg.findBlock('spruce_log', true, false, 50, skipCurrentLog);
+      const locatedLog = await rg.findBlock('spruce_log', {exactMatch: true, skipClosest: skipCurrentLog});
       if (locatedLog) {
-        const completedDig = await rg.findAndDigBlock('spruce_log', true, false, 50, skipCurrentLog);
+        const completedDig = await rg.findAndDigBlock('spruce_log', {exactMatch: true, skipClosest: skipCurrentLog});
         if (completedDig) {
           logGathered = true;
         }
@@ -70,7 +70,7 @@ function gatherLogsRoutine(rg, bot) {
         // If the bot failed to collect a log, 
         // have it wander for a bit and find another one
         await rg.wander();
-        await bot.waitForTicks(50);
+        await rg.wait(50);
       }
     }
   }
@@ -88,14 +88,14 @@ function gatherLogsRoutine(rg, bot) {
   bot.on('playerCollect', async (collector, collected) => {
     const itemCollected = rg.getItemName(collected);
     console.log('item collected ', itemCollected)
-    if (collector.username == bot.username && (itemCollected == 'spruce_log' || itemCollected == 'apple')) {
+    if (collector.username === bot.username && (itemCollected === 'spruce_log' || itemCollected === 'apple')) {
       rg.chat(`I collected ${itemCollected}`);
       const totalLogs = rg.getInventoryItemQuantity('spruce_log');
       const totalApples = rg.getInventoryItemQuantity('apple');
       if ((totalLogs + totalApples) < 100) {
         rg.chat('On to the next log...');
         if (!rg.inventoryContainsItem('wooden_axe')) {
-          await createAxes();
+          await craftAxes();
         }
         else {
           await rg.holdItem('wooden_axe');
