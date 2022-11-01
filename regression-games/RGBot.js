@@ -40,8 +40,8 @@ const RGBot = class {
     this.debug = debug;
   }
 
-  #log() {
-    if(this.debug) {
+  #log(message) {
+    if (this.debug) {
       console.log(message);
     }
   }
