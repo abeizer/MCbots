@@ -1,38 +1,39 @@
 const mineflayer = require('mineflayer');
 const { pathfinder, Movements } = require('mineflayer-pathfinder');
-const { GoalNear, GoalBlock, GoalPlaceBlock, GoalLookAtBlock, GoalXZ, GoalY, GoalInvert, GoalFollow } = require('mineflayer-pathfinder').goals
+const { GoalNear, GoalBlock, GoalPlaceBlock, GoalLookAtBlock, GoalXZ, GoalInvert, GoalFollow } = require('mineflayer-pathfinder').goals
 const { Vec3 } = require('vec3');
 
 /**
  *
- * Glossary:
+ * <h2><u>Glossary:</u></h2>
  *
- *  Mineflayer and Pathfinder
- *    Mineflayer is a high-level JavaScript API based on the for creating Minecraft Bots. 
+ *  <b><u>Mineflayer and Pathfinder</u></b><br>
+ *    Mineflayer is a high-level JavaScript API based on the for creating Minecraft Bots.
  *    Mineflayer supports third-party plugins like Pathfinder - an advanced Pathfinding library to help your Bot navigate the world.
- *    Regression Games uses Mineflayer and Pathfinder to create a stable and user-friendly library. Create the best Bot you can with ease.
- *    Mineflayer API documentation - https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md
- *    Mineflayer Pathfinder API documentation - https://github.com/PrismarineJS/mineflayer-pathfinder/blob/master/readme.md
+ *    Regression Games uses Mineflayer and Pathfinder to create a stable and user-friendly library. Create the best Bot you can with ease. <br>
+ *    <i>Mineflayer API documentation - https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md </i><br>
+ *    <i>Mineflayer Pathfinder API documentation - https://github.com/PrismarineJS/mineflayer-pathfinder/blob/master/readme.md </i><br>
  *
- *  Vec3
+ *
+ *  <b><u>Vec3</u></b><br>
  *    Mineflayer indicates the position of an object as a point along 3 axes. These points are represented as Vec3 instances in the following format:
- *      ( x (south), y (up), z(west) )
- *    Vec3 Documentation - https://github.com/PrismarineJS/node-vec3
+ *      {x (south), y (up), z(west)} <br>
+ *    <i>Vec3 Documentation - https://github.com/PrismarineJS/node-vec3 </i><br>
  *
- *  Entity
- *    An Entity is anything that can be dynamically spawned into the Minecraft world. 
+ *  <b><u>Entity</u></b><br>
+ *    An Entity is anything that can be dynamically spawned into the Minecraft world.
  *    Common Entities include other players, enemy mobs, items in your inventory or floating on the ground, and objects you can interact with such as minecarts or beds.
  *
- *  Block
- *    A Block is a specific type of Entity that exist in the environment. 
- *    Some yield materials when collected, like blocks of Coal or Diamond, while others can be interacted with like ladders and vines. 
+ *  <b><u>Block</u></b><br>
+ *    A Block is a specific type of Entity that exist in the environment.
+ *    Some yield materials when collected, like blocks of Coal or Diamond, while others can be interacted with like ladders and vines. <br>
  *  
- *  Item
- *    An Item represents any item that can be collected in the player's inventory or hands. 
+ *  <b><u>Item</u></b><br>
+ *    An Item represents any item that can be collected in the player's inventory or hands.
  *    These can be things like weapons and armor that the player equips, crafting materials, or items that can be placed to create a Block.
  *    This last example brings up an important distinction to keep in mind while creating your Bot: an object is an Item when in the Bot's inventory or hand, but a Block once it is placed in the world.
  *
- *  Name versus Display Name
+ *  <b><u>Name versus Display Name</u></b><br>
  *    An Entity's name is a unique identifier, and its display name is typically the same or similar identifier but in a human-readable format.
  *    As an example, the Ender Dragon is the readable name, or display name, of the Entity named ender_dragon. Likewise, Grass Block is the display name of the block named grass_block. 
  *    This library attempts to accept both the name and display name interchangeably wherever possible, so the identifier you use is up to your own personal tastes. 
@@ -54,8 +55,8 @@ const RGBot = class {
 
   /**
    * Enable or disable debug logs
-   * @param debug
-   * @return { void }
+   * @param debug {boolean}
+   * @return {void}
    */
   setDebug(debug) {
     this.debug = debug;
@@ -63,8 +64,8 @@ const RGBot = class {
 
   /**
    * Log a message if debug is enabled
-   * @param message
-   * @return { void }
+   * @param message {string}
+   * @return {void}
    */
   #log(message) {
     if (this.debug) {
@@ -74,8 +75,8 @@ const RGBot = class {
 
   /**
    * Bot sends a chat message in-game. If debug is enabled, also outputs to log.
-   * @param message
-   * @return { void }
+   * @param message {string}
+   * @return {void}
    */
   chat(message) {
     this.bot.chat(message);
@@ -85,8 +86,8 @@ const RGBot = class {
   /**
   * Waits for the specified number of in-game ticks before continuing.
   * This is similar to the standard JavaScript setTimeout function but runs on the physics timer of the Bot specifically. 
-  * @param ticks - the number of in-game ticks to wait
-  * @return { Promise<void> }
+  * @param ticks {number} - the number of in-game ticks to wait
+  * @return {Promise<void>}
   */
   async wait(ticks) {
     await this.bot.waitForTicks(ticks);
@@ -95,9 +96,9 @@ const RGBot = class {
   /**
    * Choose a random point within a minimum and maximum radius around the Bot and approach it.
    * Points are calculated on the X and Z axes 
-   * @param minDistance
-   * @param minDistance
-   * @return { Promise<boolean> } - true if the Bot successfully reached its wander goal, else false
+   * @param minDistance {number}
+   * @param maxDistance {number}
+   * @return {Promise<boolean>} - true if the Bot successfully reached its wander goal, else false
    */
   async wander(minDistance = 10, maxDistance = 10) {
     if (minDistance < 1) {
@@ -119,8 +120,8 @@ const RGBot = class {
 
   /**
    * Returns the player with this username if they exist in the current match. If they do not exist, returns null.
-   * @param username
-   * @return { Entity | null }
+   * @param username {string}
+   * @return {Entity | null}
    */
   getPlayerEntity(username) {
     return this.bot.players[username] ? this.bot.players[username].entity : null
@@ -129,8 +130,8 @@ const RGBot = class {
   /**
    * Find the nearest entity with the specified name or null if no matching entity can be found.
    * Only locates entities that can be engaged in combat.
-   * @targetName The name of the target entity. If not specified, then returns the closest attackable entity of any type.
-   * @return { Entity | null }
+   * @param targetName {string} - The name of the target entity. If not specified, then returns the closest attackable entity of any type.
+   * @return {Entity | null}
    */
   findAttackableEntity(targetName) {
     return this.bot.nearestEntity(entity => {
@@ -143,9 +144,9 @@ const RGBot = class {
   }
 
   /**
-   * Represent a Vec3 position as a string in the format `x, z, y`
-   * @param position
-   * returns { string }
+   * Represent a Vec3 position as a string in the format 'x, z, y'
+   * @param position {vec3}
+   * @returns {string}
    */
   positionString(position) {
     return `${position.x}, ${position.z}, ${position.y}`
@@ -153,8 +154,8 @@ const RGBot = class {
 
   /**
    * Accepts an Item Entity and returns the displayName of the Item, or its name if it has no displayName.
-   * @param item
-   * @return { string | undefined }
+   * @param item {Item}
+   * @return {string | undefined}
    */
   getItemName(item) {
     return item.displayName || item.name;
@@ -163,8 +164,8 @@ const RGBot = class {
   /**
    * Accepts the name of an Item and returns the corresponding Entity definition for the Item. 
    * If the Item isn't defined in minecraft's data, returns null instead.
-   * @param itemName
-   * @return { Item | null }
+   * @param itemName {string}
+   * @return {Item | null}
    */
   getItemByName(itemName) {
     try {
@@ -178,8 +179,8 @@ const RGBot = class {
   /**
    * Accepts the id of an Item and returns the corresponding Entity definition for the Item.
    * If the Item isn't defined in minecraft's data, returns null instead.
-   * @param itemId - the item's numerical id
-   * @return { Item | null }
+   * @param itemId {number} - the item's numerical id
+   * @return {Item | null}
    */
   getItemById(itemId) {
     try {
@@ -194,10 +195,10 @@ const RGBot = class {
    * Compares two Entities and returns true if either their names or displayNames match.
    * By default, performs a partial match. For example, 'planks' will match any Entity containing 'planks' in its name ('spruce_planks', 'oak_planks', etc.).
    * To force exact matches use `exactMatch`.
-   * @param targetName
-   * @param entity
-   * @param exactMatch
-   * @return { boolean }
+   * @param targetName {string}
+   * @param entity {Entity}
+   * @param exactMatch {boolean}
+   * @return {boolean}
    */
   entityNamesMatch(targetName, entity, exactMatch = false) {
     const text = targetName.toLowerCase();
@@ -208,9 +209,9 @@ const RGBot = class {
 
   /**
    * The Bot will approach the given Entity.
-   * @param entity - the Entity to approach
-   * @param maxDistance - the max distance the Bot may stand from its target
-   * @return { Promise<boolean> } - true if the Bot successfully reaches the Entity, else false
+   * @param entity {Entity} - the Entity to approach
+   * @param maxDistance {number} - the max distance the Bot may stand from its target
+   * @return {Promise<boolean>} - true if the Bot successfully reaches the Entity, else false
    */
   async approachEntity(entity, maxDistance = 1) {
     if (!entity) {
@@ -227,12 +228,12 @@ const RGBot = class {
   }
 
   /**
-   * Experimental
+   * <i><b>Experimental</b></i>
    *
    * The Bot will follow the given Entity within a maximum distance.
-   * @param entity - the Entity to follow
-   * @param maxDistance - the max distance the Bot may be from its target
-   * @return { Promise<void> }
+   * @param entity {Entity} - the Entity to follow
+   * @param maxDistance {number} - the max distance the Bot may be from its target
+   * @return {Promise<void>}
    */
   async followEntity(entity, maxDistance = 2) {
     if (!entity) {
@@ -244,12 +245,12 @@ const RGBot = class {
   }
 
   /**
-   * Experimental
+   * <i><b>Experimental</b></i>
    *
    * The Bot will avoid the given Entity, and must remain a minumum distance from it.
-   * @param entity - the Entity to avoid
-   * @param minDistance - the minimum distance the Bot must remain from its target
-   * @return { Promise<void> }
+   * @param entity {Entity} - the Entity to avoid
+   * @param minDistance {number} - the minimum distance the Bot must remain from its target
+   * @return {Promise<void>}
    */
   async avoidEntity(entity, minDistance = 5) {
     if (!entity) {
@@ -261,11 +262,11 @@ const RGBot = class {
   }
 
   /**
-   * Experimental
+   * <i><b>Experimental</b></i>
    *
    * The Bot will attack the given Entity
-   * @param entity
-   * @return { Promise<void> }
+   * @param entity {Entity}
+   * @return {Promise<void>}
    */
   async attackEntity(entity) {
     if (!entity) {
@@ -282,12 +283,12 @@ const RGBot = class {
 
   /**
    * Attempt to locate the nearest block of the given type within a specified range from the Bot.
-   * @param blockType - the displayName or name of the block to find
-   * @param exactMatch - only find blocks whose name / displayName match the blockType exactly.
-   * @param onlyFindTopBlocks - will not return any blocks that are beneath another block
-   * @param maxDistance - entities beyond this distance from the Bot will not be found
-   * @param skipClosest - will attempt to locate the next-closest Block. This can be used to skip the closest Block when the Bot encounters an issue collecting it.
-   * @return { Block | null }
+   * @param blockType {string} - the displayName or name of the block to find
+   * @param exactMatch {boolean} - only find blocks whose name / displayName match the blockType exactly.
+   * @param onlyFindTopBlocks {boolean} - will not return any blocks that are beneath another block
+   * @param maxDistance {number} - entities beyond this distance from the Bot will not be found
+   * @param skipClosest {boolean} - will attempt to locate the next-closest Block. This can be used to skip the closest Block when the Bot encounters an issue collecting it.
+   * @return {Block | null}
    */
   findBlock(blockType, exactMatch = false, onlyFindTopBlocks = false, maxDistance = 50, skipClosest = false) {
     let nearbyBlocks = this.bot.findBlocks({
@@ -336,9 +337,9 @@ const RGBot = class {
   /**
    * Attempt pathfinding. If the Bot becomes 'stuck' then cancel pathfinding.
    * The Bot is considered 'stuck' if it fails to move or perform mining/building actions during a specified interval. 
-   * @param pathFunc - a function utilizing pathfinder to move the Bot
-   * @param interval - How long in ms a Bot must be inactive to be considered 'stuck' 
-   * @return { Promise<boolean> } -  true if pathing completes, or false if pathing is cancelled or otherwise interrupted
+   * @param pathFunc {function} - a function utilizing pathfinder to move the Bot
+   * @param interval {number} - How long in ms a Bot must be inactive to be considered 'stuck'
+   * @return {Promise<boolean>} -  true if pathing completes, or false if pathing is cancelled or otherwise interrupted
    */
   async handlePath(pathFunc, interval = 5000) {
 
@@ -373,9 +374,9 @@ const RGBot = class {
 
   /**
    * The Bot will approach and stand within reach of the given Block.
-   * @param block - the Block instance to approach
-   * @param reach
-   * @return { Promise<boolean> } - true if pathing was successfully completed or false if pathing could not be completed
+   * @param block {Block} - the Block instance to approach
+   * @param reach {number}
+   * @return {Promise<boolean>} - true if pathing was successfully completed or false if pathing could not be completed
    */
   async approachBlock(block, reach = 10) {
     try {
@@ -392,10 +393,10 @@ const RGBot = class {
    * Experimental
    *
    * Place a Block from the Bot's inventory against a target Block
-   * @param blockName The name of the Block to place. Must be available in the Bot's inventory.
-   * @param targetBlock The target Block to place the new Block on/against
-   * @param faceVector The face of the targetBlock to place the new block against. (Ex. Vec3(0, 1, 0) represents the topmost face of the targetBlock)
-   * @param reach The maximum distance the Bot may be from the Block while placing it
+   * @param blockName {string} - The name of the Block to place. Must be available in the Bot's inventory.
+   * @param targetBlock  {Block} - The target Block to place the new Block on/against
+   * @param faceVector {Vec3} - The face of the targetBlock to place the new block against. (Ex. Vec3(0, 1, 0) represents the topmost face of the targetBlock)
+   * @param reach {number} - The maximum distance the Bot may be from the Block while placing it
    * @return { Promise<void> }
    */
   async placeBlock(blockName, targetBlock, faceVector = new Vec3(0, 1, 0), reach = 5) {
@@ -407,8 +408,8 @@ const RGBot = class {
 
   /**
    * Equip the best tool for harvesting the specified Block.
-   * @param block - a harvestable Block instance
-   * @return { Promise<Item | null> } - the tool that was equipped or null if the Bot did not have the tool in its inventory
+   * @param block {Block} - a harvestable Block instance
+   * @return {Promise<Item | null>} - the tool that was equipped or null if the Bot did not have the tool in its inventory
    */
   async equipBestHarvestTool(block) {
     const bestHarvestTool = this.bot.pathfinder.bestHarvestTool(block);
@@ -426,8 +427,8 @@ const RGBot = class {
   /**
    * Harvest the given Block.
    * This will equip the most appropriate tool in the Bot's inventory for this Block type.
-   * @param block - the Block instance to dig
-   * @return { Promise<void> }
+   * @param block {Block} - the Block instance to dig
+   * @return {Promise<void>}
    */
   async digBlock(block) {
     if (!block) {
@@ -455,12 +456,12 @@ const RGBot = class {
   /**
    * Locate and harvest the closest Block of a given type within a maximum distance from the Bot. 
    * This method will equip the most appropriate tool in the Bot's inventory for this Block type.
-   * @param block - the name of the Block to find and dig
-   * @param exactMatch - only find Blocks whose name / displayName match the blockType exactly
-   * @param onlyFindTopBlocks - will not attempt to harvest any Blocks that are beneath another Block
-   * @param maxDistance - Blocks further than this distance from the Bot will not be found
-   * @param skipClosest - will attempt to locate the next-closest Block. This can be used to skip the closest Block when the Bot encounters an issue collecting it
-   * @return { Promise<boolean> } - true if a Block was found and dug successfully or false if a Block was not found or if digging was interrupted
+   * @param blockType {Block} - the name of the Block to find and dig
+   * @param exactMatch {boolean} - only find Blocks whose name / displayName match the blockType exactly
+   * @param onlyFindTopBlocks {boolean} - will not attempt to harvest any Blocks that are beneath another Block
+   * @param maxDistance {number} - Blocks further than this distance from the Bot will not be found
+   * @param skipClosest {number} - will attempt to locate the next-closest Block. This can be used to skip the closest Block when the Bot encounters an issue collecting it
+   * @return {Promise<boolean>} - true if a Block was found and dug successfully or false if a Block was not found or if digging was interrupted
    */
   async findAndDigBlock(blockType, exactMatch = false, onlyFindTopBlocks = false, maxDistance = 50, skipClosest = false) {
     let result = false;
@@ -494,9 +495,9 @@ const RGBot = class {
 
   /**
    * Locate the closest Item with the given name within a maximum distance from the Bot, or null if no matching Items are found.
-   * @param itemName
-   * @param maxDistance
-   * @return { Item | null }
+   * @param itemName {string}
+   * @param maxDistance {number}
+   * @return {Item | null}
    */
   findItemOnGround(itemName, maxDistance = 30) {
     this.#log(`Detecting items with ${itemName} within a max distance of ${maxDistance}`);
@@ -513,8 +514,8 @@ const RGBot = class {
 
   /**
   * Approach an Item. If the Bot has space in its inventory, the Item will be picked up.
-  * @param item
-  * @return { Promise<boolean> } - true if pathing was successfully completed or false if pathing could not be completed
+  * @param item {Item}
+  * @return {Promise<boolean>} - true if pathing was successfully completed or false if pathing could not be completed
   */
   async approachItem(item) {
     if (!item) {
@@ -530,13 +531,14 @@ const RGBot = class {
   }
 
   /**
-   * Experimental
+   * <i><b>Experimental</i></b>
    * 
    * Drop an inventory Item containing the given itemName.
-   * Ex. dropping 'planks', drops any Item containing 'planks' in its name ('sruce_planks', 'oak_planks', etc.).
-   * @param itemName
-   * @param quantity - the quantity of this Item to drop. Defaults to 1. To drop all, use -1 or call `dropAllInventoryItem` instead.
-   * @return { Promise<void> } 
+   *
+   * Ex. dropping 'planks', drops any Item containing 'planks' in its name ('spruce_planks', 'oak_planks', etc.).
+   * @param itemName {string}
+   * @param quantity {number} - the quantity of this Item to drop. Defaults to 1. To drop all, use -1 or call `dropAllInventoryItem` instead.
+   * @return {Promise<void>}
    */
   async dropInventoryItem(itemName, quantity = 1) {
     let quantityAvailable = 0;
@@ -574,13 +576,15 @@ const RGBot = class {
   }
 
   /**
-   * Experimental
+   * <i><b>Experimental</i></b>
    * 
    * Drops all stacks of an Item in the Bot's inventory containing the itemName.
+   *
    * Ex. dropping 'planks', drops any Item containing 'planks' in its name ('sruce_planks', 'oak_planks', etc.).
+   *
    * Alias for `dropInventoryItem(itemName, -1)`
-   * @param itemName
-   * @return { Promise<void> } 
+   * @param itemName {string}
+   * @return {Promise<void>}
    */
   async dropAllInventoryItem(itemName) {
     await this.dropInventoryItem(itemName, -1);
@@ -589,8 +593,8 @@ const RGBot = class {
   /**
   * Return the id of an Item in the Bot's inventory.
   * If the Item isn't defined in minecraft's data or is not in the Bot's inventory, returns null instead.
-  * @param itemName
-  * @return { number | null }
+  * @param itemName {string}
+  * @return {number | null}
   */
   getInventoryItemId(itemName) {
     const itemId = (this.getItemByName(itemName)).id;
@@ -603,8 +607,8 @@ const RGBot = class {
 
   /**
    * Return how many of a specific item the Bot currently holds in its inventory. 
-   * @param itemName
-   * @return { int }
+   * @param itemName {string}
+   * @return {int}
    */
   getInventoryItemQuantity(itemName) {
     let quantityAvailable = 0;
@@ -622,8 +626,9 @@ const RGBot = class {
   /**
    * Returns true if the Bot has at least a specific quantity of an Item in its inventory, or false if it does not.
    * By default, checks for a quantity of at least 1.
-   * @param quantity
-   * @return { boolean }
+   * @param itemName {string}
+   * @param quantity {number}
+   * @return {boolean}
    */
   inventoryContainsItem(itemName, quantity = 1) {
     if (quantity < 1) {
@@ -635,10 +640,10 @@ const RGBot = class {
   /**
    * Craft an Item. The Bot must have enough materials to make at least one of these Items, or else recipe lookup will fail.
    * If the recipe requires a crafting station, then a craftingTable entity is required for success.
-   * @param itemName - the Item to craft
-   * @param quantity - The number of times to craft this Item. Note: this is NOT the total quantity that should be crafted (Ex. `craftItem('stick', 4)` will result in 16 sticks rather than 4) 
-   * @param craftingTable - For recipes that require a crafting table/station. A Block Entity representing the appropriate station within reach of the Bot. 
-   * @return { Promise<Item | null> } - the crafted Item or null if crafting failed
+   * @param itemName {string} - the Item to craft
+   * @param quantity {number} - The number of times to craft this Item. Note: this is NOT the total quantity that should be crafted (Ex. `craftItem('stick', 4)` will result in 16 sticks rather than 4)
+   * @param craftingTable {Block} - For recipes that require a crafting table/station. A Block Entity representing the appropriate station within reach of the Bot.
+   * @return {Promise<Item | null>} - the crafted Item or null if crafting failed
    */
   async craftItem(itemName, quantity = 1, craftingTable = null) {
     let result = null;
@@ -662,8 +667,8 @@ const RGBot = class {
 
   /**
    * Equips an Item to the Bot's hand. The Bot must have the Item in its inventory to hold it.
-   * @param itemName
-   * @return { Promise<Item | null> } - the held Item or null if the Bot was unable to equip the Item
+   * @param itemName {string}
+   * @return {Promise<Item | null>} - the held Item or null if the Bot was unable to equip the Item
    */
   async holdItem(itemName) {
     const itemId = this.getInventoryItemId(itemName);
