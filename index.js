@@ -12,6 +12,7 @@ const routines = require('./routines');
 function configureBot(bot) {
 
   const rg = new RGBot(bot);
+  rg.setDebug(true);
 
   // routines.gatherPoppiesRoutine(rg, bot);
   routines.gatherLogsRoutine(rg, bot);
