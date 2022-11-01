@@ -2,10 +2,11 @@ function gatherLogsRoutine(rg, bot) {
 
   // This method gathers enough wood to create two axes 
   // (creating two at once is more efficient than waiting for the first to break before we create the second)
-  const createAxes = async () => {
+  const craftAxes = async () => {
+
     // if we don't have all the materials we need to craft two axes, then gather them now.
     // First, the crafting table:
-    // If we don't have one, then we need 4 planks to craft it. 
+    // If we don't have one, then we need 4 planks to craft it.
     // We can get our planks from one log if needed.
     if (!rg.inventoryContainsItem('crafting_table')) {
       if (!rg.inventoryContainsItem('spruce_planks', 4)) {
@@ -76,18 +77,9 @@ function gatherLogsRoutine(rg, bot) {
 
   bot.on('spawn', async () => {
     if (!rg.inventoryContainsItem('wooden_axe')) {
-      await createAxes();
+      await craftAxes();
     }
     searchForLog();
-  });
-
-  // when pathfinder resets its path. This indicates that bot may be stuck
-  bot.on('path_reset', async (reason) => {
-    if ('stuck' === reason || 'dig_error' === reason) {
-      bot.stopDigging();
-      bot.pathfinder.stop();
-      searchForLog(true); // search for next-closest log instead
-    }
   });
 
   // Whenever we collect a log, check inventory

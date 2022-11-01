@@ -13,15 +13,15 @@ function configureBot(bot) {
 
   const rg = new RGBot(bot);
 
-  routines.gatherPoppiesRoutine(rg, bot);
-  // routines.gatherLogsRoutine(rg, bot);
+  // routines.gatherPoppiesRoutine(rg, bot);
+  routines.gatherLogsRoutine(rg, bot);
 
-  bot.on('whisper', (...args) => {
-    if (args[0] === bot.username || args[0] === 'you') { return };
-    if (args[1] === 'wood') {
-      rg.findAndDigBlock('spruce_log');
-    }
-  })
+  // bot.on('whisper', (...args) => {
+  //   if (args[0] === bot.username || args[0] === 'you') { return };
+  //   if (args[1] === 'wood') {
+  //     rg.findAndDigBlock('spruce_log');
+  //   }
+  // })
 
 }
 
