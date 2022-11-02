@@ -39,6 +39,7 @@ function gatherLogsRoutine(rg, bot) {
 
     // Once we know the Bot has successfully gathered one log, have it tell us in chat.
     rg.chat('Collected a Spruce Log');
+    console.log('INVENTORY: ', JSON.stringify(bot.inventory));
 
   }
 
