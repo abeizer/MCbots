@@ -118,7 +118,7 @@ function gatherLogsRoutine(rg, bot) {
     }
 
     // Once we have 100 points, announce it in the chat
-    rg.chat(`I reach my goal! I have ${totalLogs} logs and ${totalApples} apples`);
+    rg.chat(`I reach my goal! I have ${logsCollected} logs and ${applesCollected} apples`);
 
   });
 
