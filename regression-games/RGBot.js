@@ -546,7 +546,7 @@ const RGBot = class {
   async findAndCollectItemsOnGround(options = {}) {
     const maxDistance = options.maxDistance || 50;
     this.#log(`Collecting all items on the ground within a max distance of ${maxDistance}`);
-    const itemsToCollect = this.findItemsOnGround({maxDistance});
+    const itemsToCollect = this.findItemsOnGround({maxDistance: maxDistance});
 
     let result = [];
     for(let itemToCollect of itemsToCollect) {
@@ -579,9 +579,9 @@ const RGBot = class {
    */
   findItemOnGround(itemName, options = {}) {
     const maxDistance = options.maxDistance || 30;
-    this.#log(`Detecting items with ${itemName} within a max distance of ${maxDistance}`);
+    this.#log(`Detecting item ${itemName} within a max distance of ${maxDistance}`);
     return this.bot.nearestEntity((entity) => {
-      if (entity.type === "object" && entity.objectType === "Item" && entity.onGround) {
+      if (entity.objectType === "Item" && entity.onGround) {
         const itemEntity = this.getItemById(entity.metadata[8].itemId);
         const matchedName = !itemName || this.entityNamesMatch(itemName, itemEntity);
         if (matchedName && this.bot.entity.position.distanceTo(entity.position) <= maxDistance) {
