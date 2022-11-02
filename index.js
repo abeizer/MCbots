@@ -16,7 +16,7 @@ function configureBot(bot) {
 
   // routines.gatherPoppiesRoutine(rg, bot);
   // routines.gatherLogsRoutine(rg, bot);
-  routines.advancedStrategy(rg, bot);
+  // routines.advancedStrategy(rg, bot);
 
   bot.on('whisper', async (...args) => {
     if (args[0] === bot.username || args[0] === 'you') { return }
