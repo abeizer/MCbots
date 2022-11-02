@@ -14,7 +14,7 @@ function gatherLogsRoutine(rg, bot) {
 
     // Ensure that if the Bot fails to gather the dropped log,
     // it will try collecting another log until its inventory reflects one has been picked up
-    while (rg.getInventoryItemQuantity('spruce_log') < logsBefore) {
+    while (rg.getInventoryItemQuantity('spruce_log') <= logsBefore) {
       const foundLog = await rg.findBlock('spruce_log', { exactMatch: true, skipClosest: skipCurrentLog });
       if (foundLog) {
         // If the Bot located a spruce log, then go chop it
