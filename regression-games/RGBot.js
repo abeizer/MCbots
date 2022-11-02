@@ -521,16 +521,13 @@ const RGBot = class {
    * Returns a list of all Items that are on the ground within a maximum distance from the Bot (can be empty).
    * @param options {object} - optional parameters
    * @param options.maxDistance {number}
-   * @return {List<Item>}
+   * @return {Item[]}
    */
   findItemsOnGround(options = {}) {
     const maxDistance = options.maxDistance || 50;
     this.#log(`Detecting all items on the ground within a max distance of ${maxDistance}`);
     // this.bot.entities is a map of entityId : entity
-    let result = [];
-    this.#log(`${JSON.stringify(this.bot.entities)}`);
-
-    return this.bot.entities.filter((entity) => {
+    return Object.values(this.bot.entities).filter((entity) => {
       return (entity.type === "object" && entity.objectType === "Item" && entity.onGround);
     });
   }
