@@ -553,6 +553,9 @@ const RGBot = class {
       // check to see if item still exists in world
       const itemEntity = this.getItemById(itemToCollect.metadata[8].itemId);
       const itemName = this.getItemName(itemEntity);
+
+      console.log(`itemEntity: ${JSON.stringify(itemEntity)}`)
+      console.log(`itemName: ${itemName}`)
       if(await this.findItemOnGround(itemName) != null) {
         console.log('need to approach ', itemName);
         // if it is on the ground, then approach it and collect it.
