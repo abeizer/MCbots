@@ -527,16 +527,12 @@ const RGBot = class {
     const maxDistance = options.maxDistance || 50;
     this.#log(`Detecting all items on the ground within a max distance of ${maxDistance}`);
     // this.bot.entities is a map of entityId : entity
-    let results = [];
     console.log(JSON.stringify(Object.values(this.bot.entities)))
-    Object.values(this.bot.entities).filter((entity) => {
+    return Object.values(this.bot.entities).filter((entity) => {
       if (entity.objectType === "Item" && entity.onGround) {
-        if (this.bot.entity.position.distanceTo(entity.position) <= maxDistance) {
-          results.push(entity);
-        }
+        return this.bot.entity.position.distanceTo(entity.position) <= maxDistance;
       }
     });
-    console.log('all results: ', JSON.stringify(results));
   }
 
   /**
