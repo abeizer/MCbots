@@ -501,7 +501,7 @@ const RGBot = class {
           if (block.drops && block.drops.length > 0) {
             droppedItem = await this.findItemOnGround(block.drops[0]);
           } else {
-            droppedItem = await this.findItemOnGround(block.name || block.displayName);
+            droppedItem = await this.findItemOnGround(block.name);
           }
 
           if (droppedItem) {

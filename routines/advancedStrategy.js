@@ -36,12 +36,15 @@ function gatherLogsRoutine(rg, bot) {
         }
       }
     }
-
-    // Once we know the Bot has successfully gathered one log, have it tell us in chat.
-    rg.chat('Collected a Spruce Log');
-    console.log('INVENTORY: ', JSON.stringify(bot.inventory));
-
   }
+
+  // The bot will announce whenever it collects a log or an apple
+  bot.on('playerCollect', async (collector, collected) => {
+    const itemName = rg.getItemName(collected).toLowerCase();
+    if (collector.username === bot.username && (itemName.contains('log') || itemName === 'apple')) {
+      rg.chat(`I collected a ${itemName}`);
+    }
+  });
 
   // This method gathers enough wood to craft two axes 
   // (crafting two at once is more efficient than waiting for the first to break before we craft the second)
