@@ -298,7 +298,7 @@ const RGBot = class {
    * @param options.skipClosest {boolean} - will attempt to locate the next-closest Block. This can be used to skip the closest Block when the Bot encounters an issue collecting it.
    * @return {Block | null}
    */
-  findBlock(blockType, options= {}) {
+  findBlock(blockType, options = {}) {
     const exactMatch = options.exactMatch || false;
     const onlyFindTopBlocks = options.onlyFindTopBlocks || false;
     const maxDistance = options.maxDistance || 50;
@@ -310,7 +310,7 @@ const RGBot = class {
       matching: (block) => {
         let blockFound = false;
         if (blockType) {
-          blockFound = (this.entityNamesMatch(blockType, block, {exactMatch}));
+          blockFound = (this.entityNamesMatch(blockType, block, { exactMatch }));
         }
         else if (block.type !== 0) {
           blockFound = true; // if nothing specified... try anything but air
@@ -353,7 +353,7 @@ const RGBot = class {
    * @param options.interval {number} - how long in ms a Bot must be inactive to be considered 'stuck'
    * @return {Promise<boolean>} -  true if pathing completes, or false if pathing is cancelled or otherwise interrupted
    */
-  async handlePath(pathFunc, options) {
+  async handlePath(pathFunc, options = {}) {
     const interval = options.interval || 5000;
     let previousPosition = this.bot.entity.position;
     let wasActive = true;
@@ -414,7 +414,7 @@ const RGBot = class {
    * @param options.reach {number} - the maximum distance the Bot may be from the Block while placing it
    * @return { Promise<void> }
    */
-  async placeBlock(blockName, targetBlock, options= {}) {
+  async placeBlock(blockName, targetBlock, options = {}) {
     const faceVector = options.faceVector || new Vec3(0, 1, 0);
     const reach = options.reach || 5;
     this.#log(`Moving to position ${this.positionString(targetBlock.position)} to place ${blockName}`);
@@ -488,7 +488,7 @@ const RGBot = class {
     const skipClosest = options.skipClosest || false;
 
     let result = false;
-    const block = this.findBlock(blockType, {exactMatch, onlyFindTopBlocks, maxDistance, skipClosest});
+    const block = this.findBlock(blockType, { exactMatch, onlyFindTopBlocks, maxDistance, skipClosest });
     if (block) {
       try {
         if (await this.approachBlock(block)) {
@@ -523,7 +523,7 @@ const RGBot = class {
    * @param options.maxDistance {number}
    * @return {Item | null}
    */
-  findItemOnGround(itemName, options= {}) {
+  findItemOnGround(itemName, options = {}) {
     const maxDistance = options.maxDistance || 30;
     this.#log(`Detecting items with ${itemName} within a max distance of ${maxDistance}`);
     return this.bot.nearestEntity((entity) => {
@@ -566,7 +566,7 @@ const RGBot = class {
    * @param options.quantity {number} - the quantity of this Item to drop. Defaults to 1. To drop all, use -1 or call `dropAllInventoryItem` instead.
    * @return {Promise<void>}
    */
-  async dropInventoryItem(itemName, options= {}) {
+  async dropInventoryItem(itemName, options = {}) {
     const quantity = options.quantity || 1;
     let quantityAvailable = 0;
     let itemsToDrop = this.bot.inventory.items().filter((item) => {
@@ -580,7 +580,7 @@ const RGBot = class {
       }
       return false;
     });
-    
+
     if (quantityAvailable > 0) {
       let quantityToDrop = (quantity < 0 ? quantityAvailable : quantity);
       this.#log('I am dropping ' + quantityToDrop + ' ' + itemName)
@@ -614,7 +614,7 @@ const RGBot = class {
    * @return {Promise<void>}
    */
   async dropAllInventoryItem(itemName) {
-    await this.dropInventoryItem(itemName, {quantity: -1});
+    await this.dropInventoryItem(itemName, { quantity: -1 });
   }
 
   /**
@@ -640,7 +640,7 @@ const RGBot = class {
   getInventoryItemQuantity(itemName) {
     let quantityAvailable = 0;
     this.bot.inventory.items().filter((item) => {
-      if (this.entityNamesMatch(itemName, item, {exactMatch: true})) {
+      if (this.entityNamesMatch(itemName, item, { exactMatch: true })) {
         quantityAvailable += item.count;
         return true;
       }
