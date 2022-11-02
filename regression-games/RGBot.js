@@ -530,7 +530,7 @@ const RGBot = class {
     let results = [];
     console.log(JSON.stringify(Object.values(this.bot.entities)))
     Object.values(this.bot.entities).filter((entity) => {
-      if (entity.type === "object" && entity.objectType === "Item" && entity.onGround) {
+      if (entity.objectType === "Item" && entity.onGround) {
         if (this.bot.entity.position.distanceTo(entity.position) <= maxDistance) {
           results.push(entity);
         }
