@@ -191,20 +191,18 @@ const RGBot = class {
   }
 
   /**
-   * Compares two Entities and returns true if either their names or displayNames match.
-   * By default, performs a partial match. For example, 'planks' will match any Entity containing 'planks' in its name ('spruce_planks', 'oak_planks', etc.).
-   * To force exact matches use `exactMatch`.
+   * Compares two Entities and returns true if either their names or displayNames are the same.
    * @param targetName {string}
    * @param entity {Entity}
    * @param options {object} - optional parameters
-   * @param options.exactMatch {boolean}
+   * @param options.partialMatch {boolean} - Allow partial matches. For example, 'planks' will match any Entity containing 'planks' in its name ('spruce_planks', 'oak_planks', etc.).
    * @return {boolean}
    */
   entityNamesMatch(targetName, entity, options = {}) {
-    const exactMatch = options.exactMatch || false;
+    const partialMatch = options.partialMatch || false;
     const text = targetName.toLowerCase();
-    const namesMatch = entity.name && ((entity.name.toLowerCase() == text) || (!exactMatch && entity.name.toLowerCase().includes(text)));
-    const displayNamesMatch = entity.displayName && ((entity.displayName.toLowerCase() == text) || (!exactMatch && entity.displayName.toLowerCase().includes(text)));
+    const namesMatch = entity.name && ((entity.name.toLowerCase() === text) || (partialMatch && entity.name.toLowerCase().includes(text)));
+    const displayNamesMatch = entity.displayName && ((entity.displayName.toLowerCase() === text) || (partialMatch && entity.displayName.toLowerCase().includes(text)));
     return namesMatch || displayNamesMatch;
   }
 
@@ -292,14 +290,14 @@ const RGBot = class {
    * Attempt to locate the nearest block of the given type within a specified range from the Bot.
    * @param blockType {string} - the displayName or name of the block to find
    * @param options - optional parameters
-   * @param options.exactMatch {boolean} - only find blocks whose name / displayName match the blockType exactly.
+   * @param options.partialMatch {boolean} - find blocks whose name / displayName contains blockType. (Ex. 'log' may find any of 'spruce_log', 'oak_log', etc.).
    * @param options.onlyFindTopBlocks {boolean} - will not return any blocks that are beneath another block
    * @param options.maxDistance {number} - entities beyond this distance from the Bot will not be found
    * @param options.skipClosest {boolean} - will attempt to locate the next-closest Block. This can be used to skip the closest Block when the Bot encounters an issue collecting it.
    * @return {Block | null}
    */
   findBlock(blockType, options = {}) {
-    const exactMatch = options.exactMatch || false;
+    const partialMatch = options.partialMatch || false;
     const onlyFindTopBlocks = options.onlyFindTopBlocks || false;
     const maxDistance = options.maxDistance || 50;
     const skipClosest = options.skipClosest || false;
@@ -310,7 +308,7 @@ const RGBot = class {
       matching: (block) => {
         let blockFound = false;
         if (blockType) {
-          blockFound = (this.entityNamesMatch(blockType, block, { exactMatch }));
+          blockFound = (this.entityNamesMatch(blockType, block, { partialMatch }));
         }
         else if (block.type !== 0) {
           blockFound = true; // if nothing specified... try anything but air
@@ -454,7 +452,7 @@ const RGBot = class {
     } else {
       await this.equipBestHarvestTool(block);
       const checkForInfiniteDig = async (reason) => {
-        if (reason == 'block_updated' || reason == 'dig_error') {
+        if (reason === 'block_updated' || reason === 'dig_error') {
           // if Bot is still digging but the target block no longer exists then stop the Bot
           if (this.bot.pathfinder.isMining() && !this.bot.targetDigBlock) {
             this.#log('Cancelling current dig because target block no longer exists.');
@@ -476,20 +474,20 @@ const RGBot = class {
    * This method will equip the most appropriate tool in the Bot's inventory for this Block type.
    * @param blockType {string} - the name of the Block to find and dig
    * @param options {object} - optional parameters
-   * @param options.exactMatch {boolean} - only find Blocks whose name / displayName match the blockType exactly
+   * @param options.partialMatch {boolean} - find blocks whose name / displayName contains blockType. (Ex. 'log' may find any of 'spruce_log', 'oak_log', etc.).
    * @param options.onlyFindTopBlocks {boolean} - will not attempt to harvest any Blocks that are beneath another Block
    * @param options.maxDistance {number} - Blocks further than this distance from the Bot will not be found
    * @param options.skipClosest {number} - will attempt to locate the next-closest Block. This can be used to skip the closest Block when the Bot encounters an issue collecting it
    * @return {Promise<boolean>} - true if a Block was found and dug successfully or false if a Block was not found or if digging was interrupted
    */
   async findAndDigBlock(blockType, options = {}) {
-    const exactMatch = options.exactMatch || false;
+    const partialMatch = options.partialMatch || false;
     const onlyFindTopBlocks = options.onlyFindTopBlocks || false;
     const maxDistance = options.maxDistance || 50;
     const skipClosest = options.skipClosest || false;
 
     let result = false;
-    const block = this.findBlock(blockType, { exactMatch, onlyFindTopBlocks, maxDistance, skipClosest });
+    const block = this.findBlock(blockType, { partialMatch, onlyFindTopBlocks, maxDistance, skipClosest });
     if (block) {
       try {
         if (await this.approachBlock(block)) {
@@ -512,6 +510,53 @@ const RGBot = class {
       }
       catch (err) {
         console.error('Error finding and digging block', err)
+      }
+    }
+    return result;
+  }
+
+  /**
+   * <i><b>Experimental</b></i>
+   *
+   * Returns a list of all Items that are on the ground within a maximum distance from the Bot (can be empty).
+   * @param options {object} - optional parameters
+   * @param options.maxDistance {number}
+   * @return {List<Item>}
+   */
+  findItemsOnGround(options = {}) {
+    const maxDistance = options.maxDistance || 50;
+    this.#log(`Detecting all items on the ground within a max distance of ${maxDistance}`);
+    return this.bot.entities.filter((entity) => {
+      return (entity.type === "object" && entity.objectType === "Item" && entity.onGround);
+    });
+  }
+
+  /**
+   * <i><b>Experimental</b></i>
+   *
+   * Collects all Items on the ground within a maximum distance from the Bot.
+   * @param options {object} - optional parameters
+   * @param options.maxDistance {number}
+   * @return {Promise<Item[]>} - the list of Item definitions for all Items collected from the ground (can be empty)
+   */
+  async findAndCollectItemsOnGround(options = {}) {
+    const maxDistance = options.maxDistance || 50;
+    this.#log(`Collecting all items on the ground within a max distance of ${maxDistance}`);
+    const itemsToCollect = this.findItemsOnGround({maxDistance});
+
+    let result = [];
+    for(let itemToCollect of itemsToCollect) {
+      // check to see if item still exists in world
+      const itemEntity = this.getItemById(entity.metadata[8].itemId);
+      const itemName = this.getItemName(itemEntity);
+      if(await this.findItemOnGround(itemName) != null) {
+        // if it is on the ground, then approach it and collect it.
+        if(await this.approachItem(itemToCollect)) {
+          result.push(itemToCollect)
+        }
+      } else {
+        // if it isn't, then we will assume we've already picked it up
+        result.push(itemToCollect);
       }
     }
     return result;
@@ -559,23 +604,20 @@ const RGBot = class {
   /**
    * <i><b>Experimental</i></b>
    * 
-   * Drop an inventory Item containing the given itemName.
-   *
-   * Ex. dropping 'planks', drops any Item containing 'planks' in its name ('spruce_planks', 'oak_planks', etc.).
+   * Drop an inventory Item on the ground.
    * @param itemName {string}
    * @param options {object} - optional parameters
+   * @param options.partialMatch {number} - drop items whose name / displayName contains itemName. (Ex. itemName 'stone' will drop 'stone', 'stone_axe', 'stone_sword', etc.).
    * @param options.quantity {number} - the quantity of this Item to drop. Defaults to 1. To drop all, use -1 or call `dropAllInventoryItem` instead.
    * @return {Promise<void>}
    */
   async dropInventoryItem(itemName, options = {}) {
+    const partialMatch = options.partialMatch || false;
     const quantity = options.quantity || 1;
+
     let quantityAvailable = 0;
     let itemsToDrop = this.bot.inventory.items().filter((item) => {
-      // don't drop an 'axe' unless it has explicitly requested... this prevents the Bot from dropping stone tools when dropping stone
-      const isAxe = itemName.toLowerCase().includes('axe');
-      const itemNameMatches = (item.name && item.name.toLowerCase().includes(itemName.toLowerCase()) && (isAxe || !item.name.toLowerCase().includes('axe')));
-      const displayNameMatches = (item.displayName && item.displayName.toLowerCase().includes(itemName.toLowerCase()) && (isAxe || !item.displayName.toLowerCase().includes('axe')));
-      if (itemNameMatches || displayNameMatches) {
+      if (this.entityNamesMatch(itemName, item, {partialMatch})) {
         quantityAvailable += item.count
         return true;
       }
@@ -584,22 +626,23 @@ const RGBot = class {
 
     if (quantityAvailable > 0) {
       let quantityToDrop = (quantity < 0 ? quantityAvailable : quantity);
-      this.#log('I am dropping ' + quantityToDrop + ' ' + itemName)
+      this.#log(`Dropping ${quantityToDrop} of ${itemName}`);
       try {
         let i = 0;
         while (quantityToDrop > 0 && i < itemsToDrop.length) {
-          let theItem = itemsToDrop[i];
-          let qty = (theItem.count > quantityToDrop ? quantityToDrop : theItem.count);
-          await this.bot.toss(theItem.type, theItem.metadata, qty)
-          quantityToDrop -= qty;
+          // we may need to drop items from multiple stacks to satisfy the quantity
+          const itemToDrop = itemsToDrop[i];
+          const currentQuantity = (itemToDrop.count > quantityToDrop ? quantityToDrop : itemToDrop.count);
+          await this.bot.toss(itemToDrop.type, itemsToDrop.metadata, currentQuantity);
+          quantityToDrop -= currentQuantity;
           ++i;
         }
       } catch (err) {
-        console.error(`I encountered an error while dropping ${itemName}`, err)
+        console.error(`Error encountered while dropping ${itemName} from inventory`, err)
       }
     }
     else {
-      this.#log(`I don't have any ${itemName} to drop`)
+      console.error(`dropInventoryItem: No ${itemName} in inventory to drop`)
     }
   }
 
@@ -636,12 +679,15 @@ const RGBot = class {
   /**
    * Return how many of a specific item the Bot currently holds in its inventory.
    * @param itemName {string}
+   * @param options {object} - optional parameters
+   * @param options.partialMatch {boolean} - count any items whose name / displayName contains itemName. (Ex. 'wooden_axe', 'stone_axe', 'diamond_axe', etc. will all be included in the quantity for itemName 'axe').
    * @return {int}
    */
-  getInventoryItemQuantity(itemName) {
+  getInventoryItemQuantity(itemName, options = {}) {
+    const partialMatch = options.partialMatch || false;
     let quantityAvailable = 0;
     this.bot.inventory.items().filter((item) => {
-      if (this.entityNamesMatch(itemName, item, { exactMatch: true })) {
+      if (this.entityNamesMatch(itemName, item, { partialMatch })) {
         quantityAvailable += item.count;
         return true;
       }
@@ -683,7 +729,7 @@ const RGBot = class {
     let result = null;
     const itemId = (this.getItemByName(itemName)).id;
     const recipes = await this.bot.recipesFor(itemId, null, null, craftingTable);
-    if (recipes.length == 0) {
+    if (recipes.length === 0) {
       this.#log(`Failed to create ${itemName}. Either the item is not valid, or the bot does not possess the required materials to craft it.`);
     }
     else {

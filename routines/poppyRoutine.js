@@ -12,8 +12,8 @@ function gatherPoppiesRoutine(rg, bot) {
     while (rg.getInventoryItemQuantity('Poppy') < 20) {
 
       let completedDig = false;
-      if (await rg.findBlock('Poppy', {exactMatch: true, skipClosest: stuck >= 1})) {
-        completedDig = await rg.findAndDigBlock('Poppy', {exact: true, skipClosest: stuck >= 1});
+      if (await rg.findBlock('Poppy', {skipClosest: stuck >= 1})) {
+        completedDig = await rg.findAndDigBlock('Poppy', {skipClosest: stuck >= 1});
       }
       if (!completedDig) {
         stuck++;

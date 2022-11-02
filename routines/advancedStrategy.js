@@ -15,10 +15,10 @@ function gatherLogsRoutine(rg, bot) {
     // Ensure that if the Bot fails to gather the dropped log,
     // it will try collecting another log until its inventory reflects one has been picked up
     while (rg.getInventoryItemQuantity('spruce_log') <= logsBefore) {
-      const foundLog = await rg.findBlock('spruce_log', { exactMatch: true, skipClosest: skipCurrentLog });
+      const foundLog = await rg.findBlock('spruce_log', {skipClosest: skipCurrentLog});
       if (foundLog) {
         // If the Bot located a spruce log, then go chop it
-        const success = await rg.findAndDigBlock('spruce_log', { exactMatch: true, skipClosest: skipCurrentLog });
+        const success = await rg.findAndDigBlock('spruce_log', {skipClosest: skipCurrentLog});
         if (!success) {
           // If anything prevents the Bot from breaking the block,
           // then find the next-closest log and try chopping that instead.
@@ -53,7 +53,7 @@ function gatherLogsRoutine(rg, bot) {
     // If the Bot doesn't have all the materials it needs to craft two axes, then gather them now.
 
     // First, the crafting table:
-    // If the Bot doesn't have one already, then 4 plankss are needed to craft it.
+    // If the Bot doesn't have one already, then 4 planks are needed to craft it.
     // The Bot can get planks from 1 log if needed.
     if (!rg.inventoryContainsItem('crafting_table')) {
       if (!rg.inventoryContainsItem('spruce_planks', { quantity: 4 })) {
