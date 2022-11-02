@@ -529,9 +529,14 @@ const RGBot = class {
     // this.bot.entities is a map of entityId : entity
     let results = [];
     console.log(JSON.stringify(Object.values(this.bot.entities)))
-    return Object.values(this.bot.entities).filter((entity) => {
-      return (entity.type === "object" && entity.objectType === "Item" && entity.onGround);
+    Object.values(this.bot.entities).filter((entity) => {
+      if (entity.type === "object" && entity.objectType === "Item" && entity.onGround) {
+        if (this.bot.entity.position.distanceTo(entity.position) <= maxDistance) {
+          results.push(entity);
+        }
+      }
     });
+    console.log('all results: ', JSON.stringify(results));
   }
 
   /**
@@ -579,7 +584,7 @@ const RGBot = class {
       if (entity.type === "object" && entity.objectType === "Item" && entity.onGround) {
         const itemEntity = this.getItemById(entity.metadata[8].itemId);
         const matchedName = !itemName || this.entityNamesMatch(itemName, itemEntity);
-        if (matchedName && this.bot.entity.position.distanceTo(entity.position) < maxDistance) {
+        if (matchedName && this.bot.entity.position.distanceTo(entity.position) <= maxDistance) {
           return entity;
         }
       }
