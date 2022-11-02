@@ -403,8 +403,6 @@ const RGBot = class {
   }
 
   /**
-   * Experimental
-   *
    * Place a Block from the Bot's inventory against a target Block
    * @param blockName {string} - the name of the Block to place. Must be available in the Bot's inventory.
    * @param targetBlock  {Block} - the target Block to place the new Block on/against
@@ -516,8 +514,6 @@ const RGBot = class {
   }
 
   /**
-   * <i><b>Experimental</b></i>
-   *
    * Returns a list of all Items that are on the ground within a maximum distance from the Bot (can be empty).
    * @param options {object} - optional parameters
    * @param options.maxDistance {number}
@@ -536,8 +532,6 @@ const RGBot = class {
   }
 
   /**
-   * <i><b>Experimental</b></i>
-   *
    * Collects all Items on the ground within a maximum distance from the Bot.
    * @param options {object} - optional parameters
    * @param options.maxDistance {number}
@@ -546,18 +540,14 @@ const RGBot = class {
   async findAndCollectItemsOnGround(options = {}) {
     const maxDistance = options.maxDistance || 50;
     this.#log(`Collecting all items on the ground within a max distance of ${maxDistance}`);
-    const itemsToCollect = this.findItemsOnGround({maxDistance: maxDistance});
+    const itemsToCollect = this.findItemsOnGround({maxDistance});
 
     let result = [];
     for(let itemToCollect of itemsToCollect) {
       // check to see if item still exists in world
       const itemEntity = this.getItemById(itemToCollect.metadata[8].itemId);
       const itemName = this.getItemName(itemEntity);
-
-      console.log(`itemEntity: ${JSON.stringify(itemEntity)}`)
-      console.log(`itemName: ${itemName}`)
-      if(await this.findItemOnGround(itemName) != null) {
-        console.log('need to approach ', itemName);
+      if(await this.findItemOnGround(itemName, {maxDistance}) != null) {
         // if it is on the ground, then approach it and collect it.
         if(await this.approachItem(itemToCollect)) {
           result.push(itemToCollect)
@@ -610,8 +600,6 @@ const RGBot = class {
   }
 
   /**
-   * <i><b>Experimental</i></b>
-   * 
    * Drop an inventory Item on the ground.
    * @param itemName {string}
    * @param options {object} - optional parameters
@@ -655,8 +643,6 @@ const RGBot = class {
   }
 
   /**
-   * <i><b>Experimental</i></b>
-   * 
    * Drops all stacks of an Item in the Bot's inventory containing the itemName.
    *
    * Ex. dropping 'planks', drops any Item containing 'planks' in its name ('spruce_planks', 'oak_planks', etc.).

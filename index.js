@@ -34,14 +34,6 @@ function configureBot(bot) {
       console.log(`DROPPING ALL LOGS`);
       await rg.dropInventoryItem('spruce_log', {quantity: -1});
     }
-    else if(args[1] === 'dropAR') {
-      console.log(`DROPPING ALL LOGS RAW`);
-      let itemsToDrop = bot.inventory.items().filter((item) => {
-        return rg.entityNamesMatch('spruce_log', item);
-      });
-
-      await bot.toss(itemsToDrop[0].type, itemsToDrop[0].metadata, 100);
-    }
   })
 
 }
