@@ -528,7 +528,7 @@ const RGBot = class {
     this.#log(`Detecting all items on the ground within a max distance of ${maxDistance}`);
     // this.bot.entities is a map of entityId : entity
     let result = [];
-    this.#log(`${this.bot.entities}`);
+    this.#log(`${JSON.stringify(this.bot.entities)}`);
 
     return this.bot.entities.filter((entity) => {
       return (entity.type === "object" && entity.objectType === "Item" && entity.onGround);
