@@ -28,11 +28,11 @@ function configureBot(bot) {
     }
     else if(args[1] === 'drop') {
       console.log(`DROPPING ONE LOG`);
-      await rg.dropInventoryItem('log', {quantity: 1});
+      await rg.dropInventoryItem('spruce_log', {quantity: 1});
     }
     else if(args[1] === 'dropA') {
       console.log(`DROPPING ALL LOGS`);
-      await rg.dropInventoryItem('log', {quantity: -1});
+      await rg.dropInventoryItem('spruce_log', {quantity: -1});
     }
     else if(args[1] === 'dropAR') {
       console.log(`DROPPING ALL LOGS RAW`);
