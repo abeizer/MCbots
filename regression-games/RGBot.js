@@ -142,12 +142,12 @@ const RGBot = class {
   }
 
   /**
-   * Represent a Vec3 position as a string in the format 'x, z, y'
+   * Represent a Vec3 position as a string in the format 'x, y, z'
    * @param {vec3} position
    * @returns {string}
    */
   positionString(position) {
-    return `${position.x}, ${position.z}, ${position.y}`
+    return `${position.x}, ${position.y}, ${position.z}`
   }
 
   /**
@@ -309,27 +309,33 @@ const RGBot = class {
     const onlyFindTopBlocks = options.onlyFindTopBlocks || false;
     const maxDistance = options.maxDistance || 50;
     const skipClosest = options.skipClosest || false;
+
+    const matchingFunction = (block) => {
+      let blockFound = false;
+      if (blockType) {
+        blockFound = (this.entityNamesMatch(blockType, block, { partialMatch }));
+      }
+      else if (block.type !== 0) {
+        blockFound = true; // if nothing specified... try anything but air
+      }
+      return blockFound;
+    }
+
+    const extraInfoFunction = (block) => {
+      if (onlyFindTopBlocks) {
+        console.log(`yes, only top blocks: ${block.type}`);
+        const blockAbove = this.bot.blockAt(block.position.offset(0, 1, 0));
+        return !blockAbove || blockAbove.type === 0 // only find if clear or 'air' above
+      }
+      return true;
+    }
+
     let nearbyBlocks = this.bot.findBlocks({
       point: this.bot.entity.position, // from the bot's current position
       maxDistance: maxDistance, // find blocks within range
       count: (skipClosest ? 2 : 1),
-      matching: (block) => {
-        let blockFound = false;
-        if (blockType) {
-          blockFound = (this.entityNamesMatch(blockType, block, { partialMatch }));
-        }
-        else if (block.type !== 0) {
-          blockFound = true; // if nothing specified... try anything but air
-        }
-        return blockFound;
-      },
-      useExtraInfo: (block) => {
-        if (onlyFindTopBlocks) {
-          const blockAbove = this.bot.blockAt(block.position.offset(0, 1, 0));
-          return !blockAbove || blockAbove.type === 0 // only find if clear or 'air' above
-        }
-        return true;
-      },
+      matching: matchingFunction,
+      useExtraInfo: extraInfoFunction,
     });
 
     let result = null;
