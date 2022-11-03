@@ -416,16 +416,21 @@ const RGBot = class {
    * @param {Block} targetBlock- the target Block to place the new Block on/against
    * @param {object} [options] - optional parameters
    * @param {Vec3} [options.faceVector=Vec3(0, 1, 0)] - the face of the targetBlock to place the new block against. (Ex. Vec3(0, 1, 0) represents the topmost face of the targetBlock)
-   * @param {number} [options.reach=5] - the maximum distance the Bot may be from the Block while placing it
+   * @param {number} [options.reach=4] - the maximum distance the Bot may be from the Block while placing it
    * @return {Promise<void>}
    */
   async placeBlock(blockName, targetBlock, options = {}) {
     const faceVector = options.faceVector || new Vec3(0, 1, 0);
-    const reach = options.reach || 5;
+    const reach = options.reach || 4;
     this.#log(`Moving to position ${this.positionString(targetBlock.position)} to place ${blockName}`);
-    await this.bot.pathfinder.goto(new GoalPlaceBlock(targetBlock.position.plus(new Vec3(3, 1, 3)), this.bot.world, { reach: reach }))
-    await this.bot.equip(this.getInventoryItemId(blockName), 'hand'); // equip block in hand
-    await this.bot.placeBlock(targetBlock, faceVector); // place it
+    const pathFunc = async() => {
+      await this.bot.pathfinder.goto(new GoalPlaceBlock(targetBlock.position), this.bot.world, { reach: reach }))
+    };
+    if(await this.handlePath(pathFunc)) {
+      await this.bot.equip(this.getInventoryItemId(blockName), 'hand'); // equip block in hand
+      await this.bot.placeBlock(targetBlock, faceVector); // place it
+    }
+
   }
 
   /**
