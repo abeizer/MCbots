@@ -310,32 +310,28 @@ const RGBot = class {
     const maxDistance = options.maxDistance || 50;
     const skipClosest = options.skipClosest || false;
 
-    const matchingFunction = (block) => {
-      let blockFound = false;
-      if (blockType) {
-        blockFound = (this.entityNamesMatch(blockType, block, { partialMatch }));
-      }
-      else if (block.type !== 0) {
-        blockFound = true; // if nothing specified... try anything but air
-      }
-      return blockFound;
-    }
-
-    const extraInfoFunction = (block) => {
-      if (onlyFindTopBlocks) {
-        console.log(`yes, only top blocks: ${block.type}`);
-        const blockAbove = this.bot.blockAt(block.position.offset(0, 1, 0));
-        return !blockAbove || blockAbove.type === 0 // only find if clear or 'air' above
-      }
-      return true;
-    }
-
     let nearbyBlocks = this.bot.findBlocks({
       point: this.bot.entity.position, // from the bot's current position
       maxDistance: maxDistance, // find blocks within range
       count: (skipClosest ? 2 : 1),
-      matching: matchingFunction,
-      useExtraInfo: extraInfoFunction,
+      matching: (block) => {
+        let blockFound = false;
+        if (blockType) {
+          blockFound = (this.entityNamesMatch(blockType, block, { partialMatch }));
+        }
+        else if (block.type !== 0) {
+          blockFound = true; // if nothing specified... try anything but air
+        }
+        return blockFound;
+      },
+      useExtraInfo: (block) => {
+        if (onlyFindTopBlocks) {
+          console.log(`yes, only top blocks: ${block.type}`);
+          const blockAbove = this.bot.blockAt(block.position.offset(0, 1, 0));
+          return !blockAbove || blockAbove.type === 0 // only find if clear or 'air' above
+        }
+        return true;
+      },
     });
 
     let result = null;
@@ -430,7 +426,7 @@ const RGBot = class {
     const reach = options.reach || 4;
     this.#log(`Moving to position ${this.positionString(targetBlock.position)} to place ${blockName}`);
     const pathFunc = async() => {
-      await this.bot.pathfinder.goto(new GoalPlaceBlock(targetBlock.position), this.bot.world, { reach: reach });
+      await this.bot.pathfinder.goto(new GoalPlaceBlock(targetBlock.position.plus(new Vec3(0, 1, 0))), this.bot.world, { reach: reach });
     };
     if(await this.handlePath(pathFunc)) {
       await this.bot.equip(this.getInventoryItemId(blockName), 'hand'); // equip block in hand
