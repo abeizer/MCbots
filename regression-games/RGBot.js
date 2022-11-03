@@ -426,8 +426,9 @@ const RGBot = class {
     const reach = options.reach || 4;
     this.#log(`Moving to position ${this.positionString(targetBlock.position)} to place ${blockName}`);
     const pathFunc = async() => {
-      await this.bot.pathfinder.goto(new GoalPlaceBlock(targetBlock.position.plus(new Vec3(0, 1, 0))), this.bot.world, { reach: reach });
+      await this.bot.pathfinder.goto(new GoalPlaceBlock(targetBlock.position, this.bot.world, { reach: reach }));
     };
+
     if(await this.handlePath(pathFunc)) {
       await this.bot.equip(this.getInventoryItemId(blockName), 'hand'); // equip block in hand
       await this.bot.placeBlock(targetBlock, faceVector); // place it
