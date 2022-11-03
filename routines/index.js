@@ -1,9 +1,9 @@
-const gatherPoppiesRoutine = require('./poppyRoutine');
-const advancedStrategy = require('./advancedStrategy');
 const simpleStrategy = require('./simpleStrategy');
+const intermediateStrategy = require('./intermeditateStrategy');
+const advancedStrategy = require('./advancedStrategy');
 
 module.exports = {
-  gatherPoppiesRoutine,
-  advancedStrategy,
   simpleStrategy,
+  intermediateStrategy,
+  advancedStrategy,
 };

@@ -14,27 +14,10 @@ function configureBot(bot) {
   const rg = new RGBot(bot);
   rg.setDebug(true);
 
-  // routines.gatherPoppiesRoutine(rg, bot);
-  // routines.gatherLogsRoutine(rg, bot);
+  // routines.simpleStrategy(rg, bot);
+  routines.intermediateStrategy(rg, bot);
   // routines.advancedStrategy(rg, bot);
 
-  bot.on('whisper', async (...args) => {
-    if (args[0] === bot.username || args[0] === 'you') { return }
-    if (args[1] === 'find') {
-      console.log(`FIND ITEMS ON GROUND: ${rg.findItemsOnGround()}`);
-    }
-    else if(args[1] === 'collect') {
-      console.log(`COLLECT ITEMS ON GROUND: ${await rg.findAndCollectItemsOnGround()}`);
-    }
-    else if(args[1] === 'drop') {
-      console.log(`DROPPING ONE LOG`);
-      await rg.dropInventoryItem('spruce_log', {quantity: 1});
-    }
-    else if(args[1] === 'dropA') {
-      console.log(`DROPPING ALL LOGS`);
-      await rg.dropInventoryItem('spruce_log', {quantity: -1});
-    }
-  })
 
 }
 
