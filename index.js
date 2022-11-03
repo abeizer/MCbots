@@ -15,8 +15,8 @@ function configureBot(bot) {
   rg.setDebug(true);
 
   // routines.simpleStrategy(rg, bot);
-  routines.intermediateStrategy(rg, bot);
-  // routines.advancedStrategy(rg, bot);
+  // routines.intermediateStrategy(rg, bot);
+  routines.advancedStrategy(rg, bot);
 
 
 }

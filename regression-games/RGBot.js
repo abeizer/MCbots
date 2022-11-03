@@ -677,7 +677,7 @@ const RGBot = class {
    * Return how many of a specific item the Bot currently holds in its inventory.
    * @param itemName {string}
    * @param options {object} - optional parameters
-   * @param options.partialMatch {boolean} - count any items whose name / displayName contains itemName. (Ex. 'wooden_axe', 'stone_axe', 'diamond_axe', etc. will all be included in the quantity for itemName 'axe').
+   * @param options.partialMatch {boolean} - count any items whose name / displayName contains itemName. (Ex. 'wooden_axe', 'stone_axe', 'diamond_axe', etc. will all be included in the quantity for itemName 'axe')
    * @return {int}
    */
   getInventoryItemQuantity(itemName, options = {}) {
@@ -699,16 +699,18 @@ const RGBot = class {
    * By default, checks for a quantity of at least 1.
    * @param itemName {string}
    * @param options {object} - optional parameters
+   * @param options.partialMatch {boolean} - check for any items whose name / displayName contains itemName. (Ex. 'wooden_axe', 'stone_axe', 'diamond_axe', etc. will all satisfy itemName 'axe')
    * @param options.quantity {number}
    * @return {boolean}
    */
   inventoryContainsItem(itemName, options = {}) {
+    const partialMatch = options.partialMatch || false;
     const quantity = options.quantity || 1;
     if (quantity < 1) {
       console.error(`inventoryContainsItem: invalid quantity ${quantity}`);
       return false;
     }
-    return this.getInventoryItemQuantity(itemName) >= quantity;
+    return this.getInventoryItemQuantity(itemName, {partialMatch}) >= quantity;
   }
 
   /**
