@@ -537,7 +537,7 @@ const RGBot = class {
     // this.bot.entities is a map of entityId : entity
     return Object.values(this.bot.entities).filter((entity) => {
       if (entity.objectType === "Item" && entity.onGround) {
-        if(!!itemName || this.entityNamesMatch(itemName, entity, {partialMatch})) {
+        if(!itemName || this.entityNamesMatch(itemName, entity, {partialMatch})) {
           return this.bot.entity.position.distanceTo(entity.position) <= maxDistance;
         }
       }
