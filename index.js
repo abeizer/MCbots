@@ -14,9 +14,9 @@ function configureBot(bot) {
   const rg = new RGBot(bot);
   rg.setDebug(true);
 
-  routines.simpleStrategy(rg, bot);
+  // routines.simpleStrategy(rg, bot);
   // routines.intermediateStrategy(rg, bot);
-  // routines.advancedStrategy(rg, bot);
+  routines.advancedStrategy(rg, bot);
 
   bot.on('whisper', async (...args) => {
     if (args[0] === bot.username || args[0] === 'you') { return }
