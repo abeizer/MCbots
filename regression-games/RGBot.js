@@ -227,7 +227,7 @@ const RGBot = class {
       console.error(`approachEntity: Entity was null or undefined`);
       return false;
     } else {
-      this.#log(`Approaching ${(entity.displayName || entity.name)} at a max distance of ${maxDistance}`);
+      this.#log(`Approaching ${this.getEntityName(entity)} at a max distance of ${maxDistance}`);
       const goal = new GoalNear(entity.position.x, entity.position.y, entity.position.z, maxDistance);
       const pathFunc = async () => {
         await this.bot.pathfinder.goto(goal);
@@ -250,7 +250,7 @@ const RGBot = class {
     if (!entity) {
       console.error(`followEntity: Entity was null or undefined`);
     } else {
-      this.#log(`Following ${(entity.displayName || entity.name)} at a max distance of ${maxDistance}`);
+      this.#log(`Following ${this.getEntityName(entity)} at a max distance of ${maxDistance}`);
       this.bot.pathfinder.setGoal(new GoalFollow(entity, maxDistance), true);
     }
   }
@@ -269,7 +269,7 @@ const RGBot = class {
     if (!entity) {
       console.error(`avoidEntity: Entity was null or undefined`);
     } else {
-      this.#log(`Avoiding ${(entity.displayName || entity.name)} at a minumum distance of ${minDistance}`);
+      this.#log(`Avoiding ${this.getEntityName(entity)} at a minumum distance of ${minDistance}`);
       this.bot.pathfinder.setGoal(new GoalInvert(new GoalFollow(entity, minDistance)), true);
     }
   }
@@ -286,10 +286,10 @@ const RGBot = class {
       console.error(`attackEntity: Entity was null or undefined`);
     } else {
       try {
-        this.#log(`Attacking ${(entity.displayName || entity.name)}`);
+        this.#log(`Attacking ${this.getEntityName(entity)}`);
         this.bot.attack(entity, true);
       } catch (err) {
-        console.error(`Error attacking target: ${(entity.displayName || entity.name)}`, err)
+        console.error(`Error attacking target: ${this.getEntityName(entity)}`, err)
       }
     }
   }
@@ -567,7 +567,7 @@ const RGBot = class {
       const itemName = this.getEntityName(itemEntity);
       if(await this.findItemOnGround(itemName, {maxDistance}) != null) {
         // if it is on the ground, then approach it and collect it.
-        if(await this.approachItem(itemToCollect)) {
+        if(await this.approachEntity(itemToCollect)) {
           result.push(itemToCollect)
         }
       } else {
