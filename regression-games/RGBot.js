@@ -119,15 +119,6 @@ const RGBot = class {
   }
 
   /**
-   * Returns the player with this username if they exist in the current match. If they do not exist, returns null.
-   * @param {string} username
-   * @return {Entity | null}
-   */
-  getPlayerEntity(username) {
-    return this.bot.players[username] ? this.bot.players[username].entity : null
-  }
-
-  /**
    * <i><b>Experimental</b></i>
    *
    * Find the nearest entity matching the search criteria
@@ -539,6 +530,8 @@ const RGBot = class {
    * @return {Item[]} - the list of Items found on the ground (can be empty)
    */
   findItemsOnGround(options = {}) {
+    const itemName = options.itemName || null;
+    const partialMatch = options.partialMatch || false;
     const maxDistance = options.maxDistance || 50;
     this.#log(`Detecting all items on the ground within a max distance of ${maxDistance}`);
     // this.bot.entities is a map of entityId : entity
