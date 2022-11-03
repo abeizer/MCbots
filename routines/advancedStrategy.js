@@ -1,13 +1,13 @@
 // This strategy is an advanced example of how to customize movements, place blocks, and craft items with RGBot.
 // The Bot will chop wood until it has 100 points-worth of items in its inventory.
 // (Note: Logs and apples are each worth 1 point)
-function gatherLogsRoutine(rg, bot) {
+function advancedStrategy(rg, bot) {
 
   // This function will make the Bot chop + pick up a Spruce Log.
-  const gatherLog = async () => {
+  async function gatherLog() {
 
     // Track whether the Bot encountered any issues while chopping a log.
-    // There are so many trees around the spawn area that it can 
+    // There are so many trees around the spawn area that it can
     // simply try to chop a different one
     let skipCurrentLog = false;
     const logsBefore = rg.getInventoryItemQuantity('spruce_log');
@@ -27,9 +27,9 @@ function gatherLogsRoutine(rg, bot) {
           skipCurrentLog = false;
         }
       } else {
-        // If the Bot didn't find any logs nearby, 
+        // If the Bot didn't find any logs nearby,
         // then allow it to wander a bit and look again.
-        // This loop makes sure it completes the wander movement. 
+        // This loop makes sure it completes the wander movement.
         let didWander = false;
         while (!didWander) {
           didWander = await rg.wander();
@@ -40,15 +40,15 @@ function gatherLogsRoutine(rg, bot) {
 
   // The bot will announce whenever it collects a log or an apple
   bot.on('playerCollect', async (collector, collected) => {
-    const itemName = rg.getItemName(collected).toLowerCase();
+    const itemName = rg.getEntityName(collected).toLowerCase();
     if (collector.username === bot.username && (itemName.includes('log') || itemName === 'apple')) {
       rg.chat(`I collected a ${itemName}`);
     }
   });
 
-  // This method gathers enough wood to craft two axes 
+  // This method gathers enough wood to craft two axes
   // (crafting two at once is more efficient than waiting for the first to break before we craft the second)
-  const craftAxes = async () => {
+  async function craftAxes() {
 
     // If the Bot doesn't have all the materials it needs to craft two axes, then gather them now.
 
@@ -90,7 +90,7 @@ function gatherLogsRoutine(rg, bot) {
     }
 
     // Finally, craft the axes
-    // Locate a spot to place the craftingTable, place it, then stand next to it 
+    // Locate a spot to place the craftingTable, place it, then stand next to it
     const ground = rg.findBlock('grass', { onlyFindTopBlocks: true }) || rg.findBlock('dirt', { onlyFindTopBlocks: true });
     await rg.placeBlock('crafting_table', ground);
     const placedTable = await rg.findBlock('crafting_table');
@@ -119,9 +119,8 @@ function gatherLogsRoutine(rg, bot) {
 
     // Once we have 100 points, announce it in the chat
     rg.chat(`I reach my goal! I have ${logsCollected} logs and ${applesCollected} apples`);
-
   });
 
 }
 
-module.exports = gatherLogsRoutine;
+module.exports = advancedStrategy;

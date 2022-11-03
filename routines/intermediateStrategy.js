@@ -3,7 +3,7 @@
 function intermediateStrategy(rg, bot) {
 
     // This function creates a pickaxe which the Bot will use to mine the starting bell
-    const createPickaxe = async () => {
+    async function createPickaxe() {
 
         // Gather enough logs to creaft a crafting table, some planks, and sticks
         const logsRequired = 3;
@@ -23,7 +23,7 @@ function intermediateStrategy(rg, bot) {
         await rg.craftItem('wooden_pickaxe', {craftingTable: placedTable});
     }
 
-    const startRoutine = async () => {
+    async function startRoutine() {
 
         // first we need a pickaxe
         await createPickaxe();

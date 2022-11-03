@@ -1,5 +1,5 @@
 const simpleStrategy = require('./simpleStrategy');
-const intermediateStrategy = require('./intermeditateStrategy');
+const intermediateStrategy = require('./intermediateStrategy');
 const advancedStrategy = require('./advancedStrategy');
 
 module.exports = {
