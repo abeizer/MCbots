@@ -418,6 +418,9 @@ const RGBot = class {
     await this.bot.pathfinder.goto(new GoalPlaceBlock(targetBlock.position.plus(new Vec3(3, 1, 3)), this.bot.world, { reach: reach }))
     await this.bot.equip(this.getInventoryItemId(blockName), 'hand'); // equip block in hand
     await this.bot.placeBlock(targetBlock, faceVector); // place it
+
+    console.log('PLACED ' + JSON.stringify(this.bot.blockAt(targetBlock.position.plus(faceVector))));
+    return await this.bot.blockAt(targetBlock.position.plus(faceVector));
   }
 
   /**
