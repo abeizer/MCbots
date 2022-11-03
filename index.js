@@ -14,7 +14,7 @@ function configureBot(bot) {
   const rg = new RGBot(bot);
   rg.setDebug(true);
 
-  // routines.simpleStrategy(rg, bot);
+  routines.simpleStrategy(rg, bot);
   // routines.intermediateStrategy(rg, bot);
   // routines.advancedStrategy(rg, bot);
 
