@@ -390,7 +390,7 @@ const RGBot = class {
    * @return {Promise<boolean>} - true if pathing was successfully completed or false if pathing could not be completed
    */
   async approachBlock(block, options = {}) {
-    const reach = options.reach || 10;
+    const reach = options.reach || 5;
     const pathFunc = async () => {
       await this.bot.pathfinder.goto(new GoalLookAtBlock(block.position, this.bot.world, { reach: reach }))
     };
