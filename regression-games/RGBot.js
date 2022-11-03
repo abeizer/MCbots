@@ -131,12 +131,13 @@ const RGBot = class {
    * <i><b>Experimental</b></i>
    *
    * Find the nearest entity matching the search criteria
-   * @param {string} targetName - the name of the target entity. If not specified, then may return an Entity of any type.
    * @param {object} [options] - optional parameters
+   * @param {string} [options.targetName=null] - target a specific type of Entity. If not specified, then may return an Entity of any type.
    * @param {boolean} [options.attackable=false] - only return entities that can be attacked
    * @return {Entity | null} - the nearest Entity matching the search criteria, or null if no matching Entity can be found.
    */
-  findEntity(targetName, options = {}) {
+  findEntity(options = {}) {
+    const targetName = options.targetName || null;
     const attackable = options.attackable || false;
     this.#log(`Searching for Entity ${targetName}`);
     return this.bot.nearestEntity(entity => {
@@ -532,8 +533,8 @@ const RGBot = class {
   /**
    * Returns a list of all Items that are on the ground within a maximum distance from the Bot (can be empty).
    * @param {object} [options] - optional parameters
-   * @param {number} [options.itemName=null] - find only Items with this name
-   * @param {number} [options.partialMatch=false] - if itemName is defined, find Items whose names / displayNames contain itemName. (Ex. 'boots' may find any of 'iron_boots', 'golden_boots', etc.).
+   * @param {string} [options.itemName=null] - find only Items with this name
+   * @param {boolean} [options.partialMatch=false] - if itemName is defined, find Items whose names / displayNames contain itemName. (Ex. 'boots' may find any of 'iron_boots', 'golden_boots', etc.).
    * @param {number} [options.maxDistance=50] - only find Items up to this distance from the Bot
    * @return {Item[]} - the list of Items found on the ground (can be empty)
    */
@@ -553,8 +554,8 @@ const RGBot = class {
   /**
    * Collects all Items on the ground within a maximum distance from the Bot.
    * @param {object} [options] - optional parameters
-   * @param {number} [options.itemName=null] - find and collect only Items with this name
-   * @param {number} [options.partialMatch=false] - if itemName is defined, find Items whose names / displayNames contain itemName. (Ex. 'boots' may find any of 'iron_boots', 'golden_boots', etc.).
+   * @param {string} [options.itemName=null] - find and collect only Items with this name
+   * @param {boolean} [options.partialMatch=false] - if itemName is defined, find Items whose names / displayNames contain itemName. (Ex. 'boots' may find any of 'iron_boots', 'golden_boots', etc.).
    * @param {number} [options.maxDistance=50] - only find and collect Items up to this distance from the Bot
    * @return {Promise<Item[]>} - a list of Item definitions for each Item collected from the ground (can be empty)
    */
