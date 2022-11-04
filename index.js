@@ -21,9 +21,12 @@ function configureBot(bot) {
   bot.on('whisper', async (...args) => {
     if (args[0] === bot.username || args[0] === 'you') { return }
     if(args[1] === 'chest') {
-      const entity = rg.findBlock('chest', { maxDistance: 100});
-      console.log(`Found chest entity: ${JSON.stringify(entity)}`);
-      console.log(`approaching chest: ${JSON.stringify(await rg.approachBlock(entity))}`);
+      const chest = rg.findBlock('chest', { maxDistance: 100});
+      console.log(`Found chest entity: ${JSON.stringify(chest)}`);
+      console.log(`approaching chest: ${JSON.stringify(await rg.approachBlock(chest))}`);
+      const openedChest = await bot.openContainer(chest);
+      console.log(`Opened Chest: ${JSON.stringify(openedChest)}`);
+
     }
   })
 
