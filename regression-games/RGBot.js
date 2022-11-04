@@ -438,8 +438,10 @@ const RGBot = class {
       catch (err) {
         // Sometimes mineflayer thinks we haven't placed a block successfully, when we actually have.
         // Rather than trusting mineflayer, we'll check to see if the placed block exists ourselves.
-        const logThis = await this.bot.blockAt(targetBlock.position.plus(faceVector));
-        console.log('BLOCK AT: ', JSON.stringify(logThis));
+        console.log('TARGET BLOCK' , await this.bot.blockAt(targetBlock.position));
+        console.log('BLOCK ABOVE', await this.bot.blockAt(targetBlock.position.plus(new Vec3(0, 1, 0))));
+        console.log('BLOCK WEST OF', await this.bot.blockAt(targetBlock.position.plus(new Vec3(1, 0, 0))));
+        console.log('BLOCK SOUTH OF', await this.bot.blockAt(targetBlock.position.plus(new Vec3(0, 0, 1))));
         throw err; // for now, so bot stops
       }
     }
