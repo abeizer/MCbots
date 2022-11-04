@@ -774,7 +774,6 @@ const RGBot = class {
     } else if (containerWindow.slots) {
       for(const slot of containerWindow.slots) {
         if(slot) {
-          console.log('SLOT: ', JSON.stringify(slot));
           result.push(slot);
         }
       }
@@ -837,7 +836,9 @@ const RGBot = class {
       for(const slot of this.bot.inventory.items()) {
         console.log('SLOT: ', JSON.stringify(slot));
         if(!itemType || this.entityNamesMatch(itemType, slot, {partialMatch})) {
+          console.log('matched');
           if(quantity == null) {
+            console.log('null')
             await containerWindow.deposit(slot.type, null, slot.count);
             quantityDeposited += slot.count;
           }

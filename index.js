@@ -27,7 +27,7 @@ function configureBot(bot) {
       const openedChest = await bot.openContainer(chest);
       console.log(`Opened Chest: ${JSON.stringify(rg.getContainerContents(openedChest))}`);
       await rg.withdrawItems(openedChest, {itemType: 'spruce_log'});
-      console.log(`Inventory: ${JSON.stringify(bot.inventory)}`);
+      console.log(`Inventory: ${JSON.stringify(bot.inventory.items())}`);
 
     }
     else if(args[1] === 'chestD') {
@@ -38,6 +38,7 @@ function configureBot(bot) {
       console.log(`Opened Chest: ${JSON.stringify(openedChest)}`);
       await rg.depositItems(openedChest, {itemType: 'spruce_log'});
       console.log(`Inventory: ${JSON.stringify(rg.getContainerContents(openedChest))}`);
+
     }
   })
 
