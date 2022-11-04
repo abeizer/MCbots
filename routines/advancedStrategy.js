@@ -98,7 +98,7 @@ function advancedStrategy(rg, bot) {
 
     // Finally, craft the axes
     // Locate a spot to place the craftingTable, place it, then stand next to it
-    const ground = rg.findBlock('grass', {onlyFindTopBlocks: true, maxDistance: 10}) || rg.findBlock('dirt', { onlyFindTopBlocks: true, maxDistance: 10});
+    const ground = rg.findBlock('grass', {onlyFindTopBlocks: true, maxDistance: 20}) || rg.findBlock('dirt', { onlyFindTopBlocks: true, maxDistance: 20});
     await rg.placeBlock('crafting_table', ground);
     const placedTable = await rg.findBlock('crafting_table');
     await rg.approachBlock(placedTable);
