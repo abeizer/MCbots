@@ -316,38 +316,21 @@ const RGBot = class {
       count: (skipClosest ? 2 : 1),
       matching: (block) => {
         let blockFound = false;
-        if(!blockType) {
-          blockFound = true;
+        if (blockType) {
+          blockFound = (this.entityNamesMatch(blockType, block, { partialMatch }));
         }
-        if(blockType && this.entityNamesMatch(blockType, block, {partialMatch})) {
-          blockFound = true;
-        }
-
-        if(blockFound && onlyFindTopBlocks && block.position) {
-          console.log('POTENTIAL BLOCK: ', JSON.stringify(block));
-          const blockAbove = this.bot.blockAt(block.position.offset(0, 1, 0));
-            return !blockAbove || blockAbove.type === this.mcData.blocksByName.air.id // only find if clear or 'air' above
+        else if (block.type !== this.mcData.blocksByName.air.id) {
+          blockFound = true; // if nothing specified... try anything but air
         }
         return blockFound;
-      }
-      // matching: (block) => {
-      //   let blockFound = false;
-      //   if (blockType) {
-      //     blockFound = (this.entityNamesMatch(blockType, block, { partialMatch }));
-      //   }
-      //   else if (block.type !== 0) {
-      //     blockFound = true; // if nothing specified... try anything but air
-      //   }
-      //   return blockFound;
-      // },
-      // useExtraInfo: (block) => {
-      //   if (onlyFindTopBlocks) {
-      //     console.log('BLOCK POSITION: ', JSON.stringify(block));
-      //     const blockAbove = this.bot.blockAt(block.position.offset(0, 1, 0));
-      //     return !blockAbove || blockAbove.type === 0 // only find if clear or 'air' above
-      //   }
-      //   return true;
-      // },
+      },
+      useExtraInfo: (block) => {
+        if (onlyFindTopBlocks) {
+          const blockAbove = this.bot.blockAt(block.position.offset(0, 1, 0));
+          return !blockAbove || blockAbove.type === 0 // only find if clear or 'air' above
+        }
+        return true;
+      },
     });
 
     let result = null;
@@ -440,6 +423,17 @@ const RGBot = class {
   async placeBlock(blockName, targetBlock, options = {}) {
     const faceVector = options.faceVector || new Vec3(0, 1, 0);
     const reach = options.reach || 4;
+
+    if(targetBlock.type === this.mcData.blocksByName.grass.id) {
+      // grass_blocks look like they take up the same amount of space/position as a dirt block, by mineflayer tells us that a grass_block
+      // sits just above (0, 1, 0) a dirt_block.
+      // When we place a Block using mineflayer's bot.placeBlock, it checks the block above the targetBlock to determine whether we've successfully
+      // placed our new Block. If we give it the position of the grass instead of the dirt, then our Block 'replaces' the grass_block
+      // but mineflayer checks for our new Block in the position _above_ where the grass was.
+      // Obviously, this will be air or some other Block type, and mineflayer complains.
+      targetBlock = this.bot.blockAt(targetBlock.position.offset(0, -1, 0));
+    }
+
     this.#log(`Moving to position ${this.positionString(targetBlock.position)} to place ${blockName}`);
     const pathFunc = async() => {
       await this.bot.pathfinder.goto(new GoalGetToBlock(targetBlock.position.x, targetBlock.position.y, targetBlock.position.z));
