@@ -619,7 +619,7 @@ const RGBot = class {
    * Drop an inventory Item on the ground.
    * @param {string} itemName
    * @param {object} [options] - optional parameters
-   * @param {number} [options.partialMatch=false] - drop items whose name / displayName contains itemName. (Ex. itemName 'stone' will drop 'stone', 'stone_axe', 'stone_sword', etc.).
+   * @param {boolean} [options.partialMatch=false] - drop items whose name / displayName contains itemName. (Ex. itemName 'stone' will drop 'stone', 'stone_axe', 'stone_sword', etc.).
    * @param {number} [options.quantity=1] - the quantity of this Item to drop. To drop all, use -1 or call `dropAllInventoryItem` instead.
    * @return {Promise<void>}
    */

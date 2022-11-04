@@ -30,6 +30,10 @@ function configureBot(bot) {
       console.log(`Attacking entity: ${JSON.stringify(entity)}`);
       await rg.attackEntity(entity);
     }
+    else if(args[1] === 'drop') {
+      console.log(`Dropping Axes`);
+      await rg.dropInventoryItem('_axe', {partialMatch: true, quantity: -1});
+    }
   })
 
 }
