@@ -16,16 +16,14 @@ function configureBot(bot) {
 
   // routines.simpleStrategy(rg, bot);
   // routines.intermediateStrategy(rg, bot);
+  routines.advancedStrategy(rg, bot);
+
 
   bot.on('whisper', async (...args) => {
     if (args[0] === bot.username || args[0] === 'you') { return }
     if(args[1] === 'drop') {
       console.log(`DROPPING AXE`);
       await rg.dropInventoryItem('wooden_axe', {quantity: 1});
-    }
-    else  if(args[1] === 'start') {
-      console.log(`STARTING`);
-      await routines.advancedStrategy(rg, bot);
     }
   })
 
