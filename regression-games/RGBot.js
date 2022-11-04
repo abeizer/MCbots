@@ -417,46 +417,29 @@ const RGBot = class {
    * @param {Block} targetBlock- the target Block to place the new Block on/against
    * @param {object} [options] - optional parameters
    * @param {Vec3} [options.faceVector=Vec3(0, 1, 0)] - the face of the targetBlock to place the new block against. (Ex. Vec3(0, 1, 0) represents the topmost face of the targetBlock)
-   * @param {number} [options.reach=4] - the maximum distance the Bot may be from the Block while placing it
+   * @param {number} [options.reach=5] - the maximum distance the Bot may be from the Block while placing it
    * @return {Promise<void>}
    */
   async placeBlock(blockName, targetBlock, options = {}) {
     const faceVector = options.faceVector || new Vec3(0, 1, 0);
-    const reach = options.reach || 4;
+    const reach = options.reach || 5;
     this.#log(`Moving to position ${this.positionString(targetBlock.position)} to place ${blockName}`);
     const pathFunc = async() => {
-      // await this.bot.pathfinder.goto(new GoalGetToBlock(targetBlock.position.x, targetBlock.position.y, targetBlock.position.z));
-      // console.log(`bot position ${this.positionString(this.bot.entity.position)} : target position ${this.positionString(targetBlock.position)}`);
-      // if(this.bot.entity.position.distanceTo(targetBlock.position) <= 4) {
-      //   console.log(`bot is inside block, moving to ${targetBlock.position.offset(0, 0, 1)}`);
-      //   await this.bot.pathfinder.goto(new GoalGetToBlock(targetBlock.position.x, targetBlock.position.y, targetBlock.position.offset(0, 0, 1).z));
-      // }
-      await this.bot.pathfinder.goto(new GoalPlaceBlock(targetBlock.position, this.bot.world, { reach: reach }));
+      await this.bot.pathfinder.goto(new GoalPlaceBlock(targetBlock.position, this.bot.world, { range: reach }));
     };
     if(await this.handlePath(pathFunc)) {
       await this.bot.equip(this.getInventoryItemId(blockName), 'hand'); // equip block in hand
       if(targetBlock.type === this.mcData.blocksByName.grass.id) {
         // grass_blocks look like they take up the same amount of space/position as a dirt block, by mineflayer tells us that a grass_block
         // sits just above (0, 1, 0) a dirt_block.
-        // When we place a Block using mineflayer's bot.placeBlock, it checks the block above the targetBlock to determine whether we've successfully
-        // placed our new Block. If we give it the position of the grass instead of the dirt, then our Block 'replaces' the grass_block
-        // but mineflayer checks for our new Block in the position _above_ where the grass was.
-        // Obviously, this will be air or some other Block type, and mineflayer complains.
+        // After we place a Block using mineflayer's bot.placeBlock,
+        // it will check the block above the targetBlock to determine whether our new Block exists.
+        // If we give it the position of grass instead of dirt, then our Block _replaces_ the grass_block
+        // and mineflayer checks the position _above_ where our new Block was placed.
+        // Obviously, this will be air or some other Block type, and mineflayer will complain.
         targetBlock = this.bot.blockAt(targetBlock.position.offset(0, -1, 0));
-        console.log('CHANGED TARGET TO', targetBlock);
       }
-      try {
-        await this.bot.placeBlock(targetBlock, faceVector); // place it
-      }
-      catch (err) {
-        // Sometimes mineflayer thinks we haven't placed a block successfully, when we actually have.
-        // Rather than trusting mineflayer, we'll check to see if the placed block exists ourselves.
-        console.log('TARGET BLOCK' , await this.bot.blockAt(targetBlock.position));
-        console.log('BLOCK ABOVE', await this.bot.blockAt(targetBlock.position.plus(new Vec3(0, 1, 0))));
-        console.log('BLOCK WEST OF', await this.bot.blockAt(targetBlock.position.plus(new Vec3(1, 0, 0))));
-        console.log('BLOCK SOUTH OF', await this.bot.blockAt(targetBlock.position.plus(new Vec3(0, 0, 1))));
-        throw err; // for now, so bot stops
-      }
+      await this.bot.placeBlock(targetBlock, faceVector); // place it
     }
 
   }
@@ -516,7 +499,7 @@ const RGBot = class {
    * @param {boolean} [options.partialMatch=false] - find blocks whose name / displayName contains blockType. (Ex. 'log' may find any of 'spruce_log', 'oak_log', etc.).
    * @param {boolean} [options.onlyFindTopBlocks=false] - will not attempt to dig any Blocks that are beneath another Block
    * @param {number} [options.maxDistance=50] - Blocks further than this distance from the Bot will not be found
-   * @param {number} [options.skipClosest=false] - will attempt to locate the next-closest Block. This can be used to skip the closest Block when the Bot encounters an issue collecting it
+   * @param {boolean} [options.skipClosest=false] - will attempt to locate the next-closest Block. This can be used to skip the closest Block when the Bot encounters an issue collecting it
    * @return {Promise<boolean>} - true if a Block was found and dug successfully or false if a Block was not found or if digging was interrupted
    */
   async findAndDigBlock(blockType, options = {}) {
@@ -766,7 +749,7 @@ const RGBot = class {
    * If the recipe requires a crafting station, then a craftingTable entity is required for success.
    * @param {string} itemName - the Item to craft
    * @param {object} [options] - optional parameters
-   * @param {string} [options.quantity=1] - the number of times to craft this Item. Note: this is NOT the total quantity that should be crafted (Ex. `craftItem('stick', 4)` will result in 16 sticks rather than 4)
+   * @param {number} [options.quantity=1] - the number of times to craft this Item. Note: this is NOT the total quantity that should be crafted (Ex. `craftItem('stick', 4)` will result in 16 sticks rather than 4)
    * @param {Block} [options.craftingTable=null] - for recipes that require a crafting table/station. A Block Entity representing the appropriate station within reach of the Bot.
    * @return {Promise<Item | null>} - the crafted Item or null if crafting failed
    */
