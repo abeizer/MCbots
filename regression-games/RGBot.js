@@ -324,8 +324,12 @@ const RGBot = class {
         }
 
         if(blockFound && onlyFindTopBlocks) {
-          const blockAbove = this.bot.blockAt(block.position.offset(0, 1, 0));
-          blockFound = !blockAbove || blockAbove.type === 0 // only find if clear or 'air' above
+          try {
+            const blockAbove = this.bot.blockAt(block.position.offset(0, 1, 0));
+            blockFound = !blockAbove || blockAbove.type === 0 // only find if clear or 'air' above
+          }catch(err) {
+            console.log('BLOCK POSITION: ', JSON.stringify(block));
+          }
         }
         return blockFound;
       },
