@@ -672,20 +672,6 @@ const RGBot = class {
   }
 
   /**
-   * Return an Item from the Bot's inventory. Has information including which slot it is in, its stack size, etc.
-   * @param {string} itemName
-   * @return {Item | null} - returns an Item instance from the Bot's inventory, or null if the Bot does not have any of this Item
-   */
-  getInventoryItem(itemName) {
-    const itemId = (this.getItemDefinitionByName(itemName)).id;
-    if (itemId) {
-      return this.bot.inventory.findInventoryItem((itemId));
-    } else {
-      return null;
-    }
-  }
-
-  /**
    * Return how many of a specific item the Bot currently holds in its inventory.
    * @param {string} itemName
    * @param {object} [options] - optional parameters
@@ -762,9 +748,9 @@ const RGBot = class {
    * @return {Promise<Item | null>} - the held Item or null if the Bot was unable to equip the Item
    */
   async holdItem(itemName) {
-    const inventoryItem = this.getInventoryItem(itemName);
-    if (inventoryItem) {
-      await this.bot.equip(inventoryItem, 'hand');
+    const item = this.getItemDefinitionByName(itemName);
+    if (item && this.inventoryContainsItem(itemName)) {
+      await this.bot.equip(item, 'hand');
       return this.bot.heldItem;
     }
     else {
