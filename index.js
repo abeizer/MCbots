@@ -16,39 +16,15 @@ function configureBot(bot) {
 
   // routines.simpleStrategy(rg, bot);
   // routines.intermediateStrategy(rg, bot);
-  routines.advancedStrategy(rg, bot);
 
   bot.on('whisper', async (...args) => {
     if (args[0] === bot.username || args[0] === 'you') { return }
-    if (args[1] === 'find') {
-      console.log(`FIND LOGS ON GROUND: ${rg.findItemsOnGround({itemName: 'log', partialMatch: true})}`);
-    }
-    else if(args[1] === 'collect') {
-      console.log(`COLLECT LOGS ON GROUND: ${await rg.findAndCollectItemsOnGround({itemName: 'log', partialMatch: true})}`);
-    }
-    else if(args[1] === 'collectAll') {
-      console.log(`COLLECT ALL ITEMS ON GROUND: ${await rg.findAndCollectItemsOnGround()}`);
-    }
-    else if(args[1] === 'attack') {
-      console.log(`ATTACKING ONE THING`);
-      const entity = await rg.findEntity({attackable: true});
-      await rg.attackEntity(entity);
+    if (args[1] === 'start') {
+      routines.advancedStrategy(rg, bot);
     }
     else if(args[1] === 'drop') {
-      console.log(`DROPPING ONE LOG`);
-      await rg.dropInventoryItem('spruce_log', {quantity: 1});
-    }
-    else if(args[1] === 'dropA') {
-      console.log(`DROPPING ALL LOGS`);
-      await rg.dropInventoryItem('spruce_log', {quantity: -1});
-    }
-    else if(args[1] === 'dropAR') {
-      console.log(`DROPPING ALL LOGS RAW`);
-      let itemsToDrop = bot.inventory.items().filter((item) => {
-        return rg.entityNamesMatch('spruce_log', item);
-      });
-
-      await bot.toss(itemsToDrop[0].type, itemsToDrop[0].metadata, 100);
+      console.log(`DROPPING AXE`);
+      await rg.dropInventoryItem('wooden_axe', {quantity: 1});
     }
   })
 
