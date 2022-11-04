@@ -316,22 +316,37 @@ const RGBot = class {
       count: (skipClosest ? 2 : 1),
       matching: (block) => {
         let blockFound = false;
-        if (blockType) {
-          blockFound = (this.entityNamesMatch(blockType, block, { partialMatch }));
+        if(!blockType) {
+          blockFound = true;
         }
-        else if (block.type !== 0) {
-          blockFound = true; // if nothing specified... try anything but air
+        if(blockType && this.entityNamesMatch(blockType, block, {partialMatch})) {
+          blockFound = true;
         }
-        return blockFound;
-      },
-      useExtraInfo: (block) => {
-        if (onlyFindTopBlocks) {
-          console.log('BLOCK POSITION: ', JSON.stringify(block));
+
+        if(blockFound && onlyFindTopBlocks && block.position) {
+          console.log('POTENTIAL BLOCK: ', JSON.stringify(block));
           const blockAbove = this.bot.blockAt(block.position.offset(0, 1, 0));
-          return !blockAbove || blockAbove.type === 0 // only find if clear or 'air' above
+            return !blockAbove || blockAbove.type === this.mcData.blocksByName.air.id // only find if clear or 'air' above
         }
-        return true;
-      },
+      }
+      // matching: (block) => {
+      //   let blockFound = false;
+      //   if (blockType) {
+      //     blockFound = (this.entityNamesMatch(blockType, block, { partialMatch }));
+      //   }
+      //   else if (block.type !== 0) {
+      //     blockFound = true; // if nothing specified... try anything but air
+      //   }
+      //   return blockFound;
+      // },
+      // useExtraInfo: (block) => {
+      //   if (onlyFindTopBlocks) {
+      //     console.log('BLOCK POSITION: ', JSON.stringify(block));
+      //     const blockAbove = this.bot.blockAt(block.position.offset(0, 1, 0));
+      //     return !blockAbove || blockAbove.type === 0 // only find if clear or 'air' above
+      //   }
+      //   return true;
+      // },
     });
 
     let result = null;
