@@ -423,19 +423,19 @@ const RGBot = class {
   async placeBlock(blockName, targetBlock, options = {}) {
     const faceVector = options.faceVector || new Vec3(0, 1, 0);
     const reach = options.reach || 5;
+
     this.#log(`Moving to position ${this.positionString(targetBlock.position)} to place ${blockName}`);
     const pathFunc = async() => {
       await this.bot.pathfinder.goto(new GoalPlaceBlock(targetBlock.position, this.bot.world, { range: reach }));
     };
+
     if(await this.handlePath(pathFunc)) {
-      await this.bot.equip(this.getInventoryItemId(blockName), 'hand'); // equip block in hand
+      await this.holdItem(blockName);
       if(targetBlock.type === this.mcData.blocksByName.grass.id) {
-        // grass_blocks look like they take up the same amount of space/position as a dirt block, by mineflayer tells us that a grass_block
-        // sits just above (0, 1, 0) a dirt_block.
-        // After we place a Block using mineflayer's bot.placeBlock,
-        // it will check the block above the targetBlock to determine whether our new Block exists.
+        // Mineflayer tells us that a grass_block sits just above (0, 1, 0) the dirt_block that it is a 'part' of.
+        // Mineflayer's bot.placeBlock checks the block above the targetBlock to determine whether our new Block exists after placement.
         // If we give it the position of grass instead of dirt, then our Block _replaces_ the grass_block
-        // and mineflayer checks the position _above_ where our new Block was placed.
+        // and mineflayer checks the position _above_ where our new Block should be placed.
         // Obviously, this will be air or some other Block type, and mineflayer will complain.
         targetBlock = this.bot.blockAt(targetBlock.position.offset(0, -1, 0));
       }
@@ -690,14 +690,15 @@ const RGBot = class {
   }
 
   /**
-   * Return the id of an Item in the Bot's inventory.
+   * Return an Item from the Bot's inventory. Has information including durability, stack size, etc.
    * If the Item isn't defined in minecraft's data or is not in the Bot's inventory, returns null instead.
    * @param {string} itemName
-   * @return {number | null}
+   * @return {Item | null}
    */
-  getInventoryItemId(itemName) {
+  getInventoryItem(itemName) {
     const itemId = (this.getItemDefinitionByName(itemName)).id;
     if (itemId) {
+      console.log(`INVENTORY ITEM: ${JSON.stringify(this.bot.inventory.findInventoryItem((itemId)))}`)
       return this.bot.inventory.findInventoryItem((itemId));
     } else {
       return null;
@@ -758,7 +759,7 @@ const RGBot = class {
     const craftingTable = options.craftingTable || null;
     let result = null;
     const itemId = (this.getItemDefinitionByName(itemName)).id;
-    const recipes = await this.bot.recipesFor(itemId, null, null, craftingTable);
+    const recipes = this.bot.recipesFor(itemId, null, null, craftingTable);
     if (recipes.length === 0) {
       this.#log(`Failed to create ${itemName}. Either the item is not valid, or the bot does not possess the required materials to craft it.`);
     }
@@ -781,9 +782,9 @@ const RGBot = class {
    * @return {Promise<Item | null>} - the held Item or null if the Bot was unable to equip the Item
    */
   async holdItem(itemName) {
-    const itemId = this.getInventoryItemId(itemName);
-    if (itemId) {
-      await this.bot.equip(itemId, 'hand');
+    const inventoryItem = this.getInventoryItem(itemName);
+    if (inventoryItem) {
+      await this.bot.equip(inventoryItem.id, 'hand');
       return this.bot.heldItem;
     }
     else {
