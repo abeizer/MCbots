@@ -834,7 +834,7 @@ const RGBot = class {
     else {
       let quantityDeposited = 0;
       for(const slot of this.bot.inventory.items()) {
-        console.log('SLOT: ', itemType, this.getEntityName(slot));
+        console.log('SLOT: ', itemType, this.entityNamesMatch(itemType, slot));
         if(!itemType || this.entityNamesMatch(itemType, slot, {partialMatch})) {
           console.log('matched');
           if(quantity == null) {
