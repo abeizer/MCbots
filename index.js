@@ -38,7 +38,13 @@ function configureBot(bot) {
       console.log(`Opened Chest: ${JSON.stringify(openedChest)}`);
       await rg.depositItems(openedChest, {itemType: 'spruce_log'});
       console.log(`Inventory: ${JSON.stringify(rg.getContainerContents(openedChest))}`);
-
+    }
+    else if(args[1] === 'close') {
+      const chest = rg.findBlock('chest', { maxDistance: 100});
+      console.log(`Found chest entity: ${JSON.stringify(chest)}`);
+      console.log(`approaching chest: ${JSON.stringify(await rg.approachBlock(chest))}`);
+      const openedChest = await bot.openContainer(chest);
+      await openedChest.close();
     }
   })
 
