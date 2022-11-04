@@ -1,13 +1,13 @@
 const mineflayer = require('mineflayer');
 const { pathfinder, Movements } = require('mineflayer-pathfinder');
-const { GoalNear, GoalBlock, GoalPlaceBlock, GoalLookAtBlock, GoalXZ, GoalInvert, GoalFollow } = require('mineflayer-pathfinder').goals
+const { GoalNear, GoalBlock, GoalPlaceBlock, GoalGetToBlock, GoalLookAtBlock, GoalXZ, GoalInvert, GoalFollow } = require('mineflayer-pathfinder').goals
 const { Vec3 } = require('vec3');
 
 /**
  *
  * <h2><u>Glossary:</u></h2>
  *
- *  <b><u>Mineflayer and Pathfinder</u></b><br>
+ *  <b><u>Mineflayer and Pathfinder</u></b><br>ß
  *    Mineflayer is a high-level JavaScript API for creating Minecraft Bots.
  *    Mineflayer supports third-party plugins like Pathfinder - an advanced Pathfinding library to help your Bot navigate the world.
  *    Regression Games uses Mineflayer and Pathfinder to create a stable and user-friendly library. Create the best Bot you can with ease. <br>
@@ -413,7 +413,7 @@ const RGBot = class {
   }
 
   /**
-   * Place a Block from the Bot's inventory against a target Block
+   * Move directly adjacent to a target Block and place another Block from the Bot's inventory against it
    * @param {string} blockName - the name of the Block to place. Must be available in the Bot's inventory.
    * @param {Block} targetBlock- the target Block to place the new Block on/against
    * @param {object} [options] - optional parameters
@@ -426,7 +426,8 @@ const RGBot = class {
     const reach = options.reach || 4;
     this.#log(`Moving to position ${this.positionString(targetBlock.position)} to place ${blockName}`);
     const pathFunc = async() => {
-      await this.bot.pathfinder.goto(new GoalPlaceBlock(targetBlock.position, this.bot.world, { reach: reach }));
+      await this.bot.pathfinder.goto(new GoalGetToBlock(targetBlock.position.x, targetBlock.position.y, targetBlock.position.z));
+      // await this.bot.pathfinder.goto(new GoalPlaceBlock(targetBlock.position, this.bot.world, { reach: reach }));
     };
 
     if(await this.handlePath(pathFunc)) {
