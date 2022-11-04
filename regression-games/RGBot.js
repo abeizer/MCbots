@@ -427,7 +427,7 @@ const RGBot = class {
     const pathFunc = async() => {
       await this.bot.pathfinder.goto(new GoalGetToBlock(targetBlock.position.x, targetBlock.position.y, targetBlock.position.z));
       console.log(`bot position ${this.positionString(this.bot.entity.position)} : target position ${this.positionString(targetBlock.position)}`);
-      if(this.bot.entity.position.distanceTo(targetBlock.position) <= 1) {
+      if(this.bot.entity.position.distanceTo(targetBlock.position) <= 4) {
         console.log(`bot is inside block, moving to ${targetBlock.position.offset(0, 0, 1)}`);
         await this.bot.pathfinder.goto(new GoalGetToBlock(targetBlock.position.x, targetBlock.position.y, targetBlock.position.offset(0, 0, 1).z));
       }
