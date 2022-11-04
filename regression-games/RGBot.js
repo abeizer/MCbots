@@ -425,13 +425,13 @@ const RGBot = class {
     const reach = options.reach || 4;
     this.#log(`Moving to position ${this.positionString(targetBlock.position)} to place ${blockName}`);
     const pathFunc = async() => {
-      await this.bot.pathfinder.goto(new GoalGetToBlock(targetBlock.position.x, targetBlock.position.y, targetBlock.position.z));
-      console.log(`bot position ${this.positionString(this.bot.entity.position)} : target position ${this.positionString(targetBlock.position)}`);
-      if(this.bot.entity.position.distanceTo(targetBlock.position) <= 4) {
-        console.log(`bot is inside block, moving to ${targetBlock.position.offset(0, 0, 1)}`);
-        await this.bot.pathfinder.goto(new GoalGetToBlock(targetBlock.position.x, targetBlock.position.y, targetBlock.position.offset(0, 0, 1).z));
-      }
-      // await this.bot.pathfinder.goto(new GoalPlaceBlock(targetBlock.position, this.bot.world, { reach: reach }));
+      // await this.bot.pathfinder.goto(new GoalGetToBlock(targetBlock.position.x, targetBlock.position.y, targetBlock.position.z));
+      // console.log(`bot position ${this.positionString(this.bot.entity.position)} : target position ${this.positionString(targetBlock.position)}`);
+      // if(this.bot.entity.position.distanceTo(targetBlock.position) <= 4) {
+      //   console.log(`bot is inside block, moving to ${targetBlock.position.offset(0, 0, 1)}`);
+      //   await this.bot.pathfinder.goto(new GoalGetToBlock(targetBlock.position.x, targetBlock.position.y, targetBlock.position.offset(0, 0, 1).z));
+      // }
+      await this.bot.pathfinder.goto(new GoalPlaceBlock(targetBlock.position, this.bot.world, { reach: reach }));
     };
     if(await this.handlePath(pathFunc)) {
       await this.bot.equip(this.getInventoryItemId(blockName), 'hand'); // equip block in hand
