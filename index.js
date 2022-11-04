@@ -23,6 +23,7 @@ function configureBot(bot) {
     if(args[1] === 'att1') {
       const entity = rg.findEntity({attackable: true});
       console.log(`Attacking entity: ${JSON.stringify(entity)}`);
+      await rg.followEntity(entity);
       await rg.attackEntity(entity);
     } else if(args[1] === 'att2') {
       const entity = rg.findEntity({attackable: true, targetName: 'villager'});
