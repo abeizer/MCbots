@@ -21,7 +21,7 @@ function configureBot(bot) {
   bot.on('whisper', async (...args) => {
     if (args[0] === bot.username || args[0] === 'you') { return }
     if(args[1] === 'chest') {
-      const entity = rg.findEntity({targetName: 'chest', attackable: true});
+      const entity = rg.findEntity({targetName: 'chest'});
       console.log(`Found chest entity: ${JSON.stringify(entity)}`);
       console.log(`approaching chest: ${JSON.stringify(await rg.approachBlock(entity))}`);
     }
