@@ -615,24 +615,6 @@ const RGBot = class {
     });
   }
 
-  // /**
-  //  * Approach an Item. If the Bot has space in its inventory, the Item will be picked up.
-  //  * @param {Item} item
-  //  * @return {Promise<boolean>} - true if pathing was successfully completed or false if pathing could not be completed
-  //  */
-  // async approachItem(item) {
-  //   if (!item) {
-  //     console.error(`approachItem: Item was null or undefined`);
-  //     return false;
-  //   } else {
-  //     this.#log(`Approaching ${(item.displayName || item.name)}`);
-  //     const pathFunc = async () => {
-  //       await this.bot.pathfinder.goto(new GoalBlock(item.position.x, item.position.y, item.position.z));
-  //     }
-  //     return await this.handlePath(pathFunc);
-  //   }
-  // }
-
   /**
    * Drop an inventory Item on the ground.
    * @param {string} itemName
@@ -691,14 +673,12 @@ const RGBot = class {
 
   /**
    * Return an Item from the Bot's inventory. Has information including which slot it is in, its stack size, etc.
-   * If the Item isn't defined in minecraft's data or is not in the Bot's inventory, returns null instead.
    * @param {string} itemName
-   * @return {Item | null}
+   * @return {Item | null} - returns an Item instance from the Bot's inventory, or null if the Bot does not have any of this Item
    */
   getInventoryItem(itemName) {
     const itemId = (this.getItemDefinitionByName(itemName)).id;
     if (itemId) {
-      console.log(`INVENTORY ITEM: ${JSON.stringify(this.bot.inventory.findInventoryItem((itemId)))}`)
       return this.bot.inventory.findInventoryItem((itemId));
     } else {
       return null;
