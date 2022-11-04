@@ -774,7 +774,7 @@ const RGBot = class {
     } else if (containerWindow.slots) {
       for(const slot of containerWindow.slots) {
         if(slot) {
-          result.add(slot);
+          result.push(slot);
         }
       }
     }
