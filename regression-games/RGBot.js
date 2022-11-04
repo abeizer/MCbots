@@ -432,7 +432,16 @@ const RGBot = class {
 
     if(await this.handlePath(pathFunc)) {
       await this.bot.equip(this.getInventoryItemId(blockName), 'hand'); // equip block in hand
-      await this.bot.placeBlock(targetBlock, faceVector); // place it
+      try {
+        await this.bot.placeBlock(targetBlock, faceVector); // place it
+      }
+      catch (err) {
+        // Sometimes mineflayer thinks we haven't placed a block successfully, when we actually have.
+        // Rather than trusting mineflayer, we'll check to see if the placed block exists ourselves.
+        const logThis = await this.bot.blockAt(targetBlock.position.plus(faceVector));
+        console.log('BLOCK AT: ', JSON.stringify(logThis));
+        throw err; // for now, so bot stops
+      }
     }
 
   }
