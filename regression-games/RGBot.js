@@ -690,7 +690,7 @@ const RGBot = class {
   }
 
   /**
-   * Return an Item from the Bot's inventory. Has information including durability, stack size, etc.
+   * Return an Item from the Bot's inventory. Has information including which slot it is in, its stack size, etc.
    * If the Item isn't defined in minecraft's data or is not in the Bot's inventory, returns null instead.
    * @param {string} itemName
    * @return {Item | null}
@@ -784,7 +784,7 @@ const RGBot = class {
   async holdItem(itemName) {
     const inventoryItem = this.getInventoryItem(itemName);
     if (inventoryItem) {
-      await this.bot.equip(inventoryItem.id, 'hand');
+      await this.bot.equip(inventoryItem, 'hand');
       return this.bot.heldItem;
     }
     else {
