@@ -426,6 +426,11 @@ const RGBot = class {
     this.#log(`Moving to position ${this.positionString(targetBlock.position)} to place ${blockName}`);
     const pathFunc = async() => {
       await this.bot.pathfinder.goto(new GoalGetToBlock(targetBlock.position.x, targetBlock.position.y, targetBlock.position.z));
+      console.log(`bot position ${this.positionString(this.bot.entity.position)} : target position ${this.positionString(targetBlock.position)}`);
+      if(this.bot.entity.position.distanceTo(targetBlock.position) <= 1) {
+        console.log(`bot is inside block, moving to ${targetBlock.position.offset(0, 0, 1)}`);
+        await this.bot.pathfinder.goto(new GoalGetToBlock(targetBlock.position.x, targetBlock.position.y, targetBlock.position.offset(0, 0, 1).z));
+      }
       // await this.bot.pathfinder.goto(new GoalPlaceBlock(targetBlock.position, this.bot.world, { reach: reach }));
     };
     if(await this.handlePath(pathFunc)) {
@@ -438,6 +443,7 @@ const RGBot = class {
         // but mineflayer checks for our new Block in the position _above_ where the grass was.
         // Obviously, this will be air or some other Block type, and mineflayer complains.
         targetBlock = this.bot.blockAt(targetBlock.position.offset(0, -1, 0));
+        console.log('CHANGED TARGET TO', targetBlock);
       }
       try {
         await this.bot.placeBlock(targetBlock, faceVector); // place it
