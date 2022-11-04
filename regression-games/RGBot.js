@@ -774,6 +774,7 @@ const RGBot = class {
     } else if (containerWindow.slots) {
       for(const slot of containerWindow.slots) {
         if(slot) {
+          console.log('SLOT: ', JSON.stringify(slot));
           result.push(slot);
         }
       }
