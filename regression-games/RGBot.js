@@ -750,6 +750,7 @@ const RGBot = class {
   async holdItem(itemName) {
     const item = this.getItemDefinitionByName(itemName);
     if (item && this.inventoryContainsItem(itemName)) {
+      this.#log(`Holding ${itemName}`);
       await this.bot.equip(item, 'hand');
       return this.bot.heldItem;
     }
