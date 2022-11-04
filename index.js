@@ -18,16 +18,15 @@ function configureBot(bot) {
   // routines.intermediateStrategy(rg, bot);
   // routines.advancedStrategy(rg, bot);
 
-
   bot.on('whisper', async (...args) => {
     if (args[0] === bot.username || args[0] === 'you') { return }
     if(args[1] === 'att1') {
       const entity = rg.findEntity({attackable: true});
-      console.log(`Attacking entity: ${entity}`);
+      console.log(`Attacking entity: ${JSON.stringify(entity)}`);
       await rg.attackEntity(entity);
     } else if(args[1] === 'att2') {
       const entity = rg.findEntity({attackable: true, targetName: 'villager'});
-      console.log(`Attacking entity: ${entity}`);
+      console.log(`Attacking entity: ${JSON.stringify(entity)}`);
       await rg.attackEntity(entity);
     }
   })
