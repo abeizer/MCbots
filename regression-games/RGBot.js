@@ -328,6 +328,7 @@ const RGBot = class {
           const blockAbove = this.bot.blockAt(block.position.offset(0, 1, 0));
             return !blockAbove || blockAbove.type === this.mcData.blocksByName.air.id // only find if clear or 'air' above
         }
+        return blockFound;
       }
       // matching: (block) => {
       //   let blockFound = false;
