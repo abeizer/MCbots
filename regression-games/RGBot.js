@@ -838,7 +838,7 @@ const RGBot = class {
         console.log('SLOT: ', JSON.stringify(slot));
         if(!itemType || this.entityNamesMatch(itemType, slot, {partialMatch})) {
           if(quantity == null) {
-            await containerWindow.deposit(slot.id, null, slot.count);
+            await containerWindow.deposit(slot.type, null, slot.count);
             quantityDeposited += slot.count;
           }
           else
