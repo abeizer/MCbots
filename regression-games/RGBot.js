@@ -761,6 +761,98 @@ const RGBot = class {
     }
   }
 
+  /**
+   * Returns the contents of an open container.
+   * If multiple stacks of the same Item are present in the container, they will not be collapsed in the result.
+   * @param {Window} containerWindow - the open container Window to withdraw items from
+   * @returns {Item[]} - the list of Items present in the container. Can be empty.
+   */
+  async getContainerContents(containerWindow, options = {}) {
+    let result = [];
+    if (!containerWindow) {
+      console.error(`getContainerContents: containerEntity was null or undefined`);
+    } else if (containerWindow.slots) {
+      for(const slot of containerWindow.slots) {
+        if(slot) {
+          result.add(slot);
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Withdraws one or more items from a container.
+   * @param {Window} containerWindow - the open container Window to withdraw items from
+   * @param {object} [options] - optional parameters
+   * @param {string} [options.itemType=null] - an Item to withdraw from the container. If not specified, will withdraw all Items.
+   * @param {boolean} [options.partialMatch=false] - TODO
+   * @param {number} [options.quantity=null] - if itemType is specified, withdraw up to this quantity.
+   * @returns {Promise<void>}
+   */
+  async withdrawItems(containerWindow, options = {}) {
+    const itemType = options.itemType || null;
+    const partialMatch = options.partialMatch || false;
+    const quantity = options.quantity || null;
+
+    // let result = [];
+    if (!containerWindow) {
+      console.error(`withdrawItems: containerEntity was null or undefined`);
+    } else if (!containerWindow.slots) {
+      console.error(`withdrawItems: containerEntity is empty`);
+    }
+    else {
+      let quantityCollected = 0;
+      for (const slot of containerWindow.slots) {
+        if(slot && (!itemType || this.entityNamesMatch(itemType, slot, {partialMatch}))) {
+          if(quantity == null) {
+            await containerWindow.withdraw(slot.type, null, slot.count);
+            quantityCollected += slot.count;
+          }
+          else
+          {
+            let amountToWithdraw = quantity - quantityCollected;
+            if(amountToWithdraw > 0) {
+              amountToWithdraw = (slot.count > amountToWithdraw ? amountToWithdraw : slot.count);
+              await containerWindow.withdraw(slot.type, null, amountToWithdraw);
+              quantityCollected += amountToWithdraw;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  async depositItems(containerWindow, options) {
+    const itemType = options.itemType || null;
+    const partialMatch = options.partialMatch || false;
+    const quantity = options.quantity || null;
+
+    if(!containerWindow) {
+      console.error(`depositItems: containerEntity was null or undefined`);
+    }
+    else {
+      let quantityDeposited = 0;
+      for(const slot of bot.inventory) {
+        if(!itemType || this.entityNamesMatch(itemType, slot, {partialMatch})) {
+          if(quantity == null) {
+            await containerWindow.deposit(slot.id, null, slot.count);
+            quantityDeposited += slot.count;
+          }
+          else
+          {
+            let amountToDeposit = quantity - quantityDeposited;
+            if(amountToDeposit > 0) {
+              amountToDeposit = slot.count > amountToDeposit ? amountToDeposit : slot.count;
+              await containerWindow.deposit(slot.id, null, amountToDeposit);
+              quantityDeposited += amountToDeposit;
+            }
+          }
+        }
+      }
+    }
+  }
+
 }
 
 module.exports = RGBot
