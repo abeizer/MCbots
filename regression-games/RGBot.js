@@ -785,13 +785,13 @@ const RGBot = class {
    * Withdraws one or more items from a container.
    * @param {Window} containerWindow - the open container Window to withdraw items from
    * @param {object} [options] - optional parameters
-   * @param {string} [options.itemType=null] - an Item to withdraw from the container. If not specified, will withdraw all Items.
-   * @param {boolean} [options.partialMatch=false]
-   * @param {number} [options.quantity=null] - if itemType is specified, withdraw up to this quantity.
+   * @param {string} [options.itemName=null] - an Item to withdraw from the container. If not specified, will withdraw all Items.
+   * @param {boolean} [options.partialMatch=false] - Allow partial matches to itemName. For example, 'planks' will match any Item containing 'planks' in its name ('spruce_planks', 'oak_planks', etc.).
+   * @param {number} [options.quantity=null] - if itemName is specified, withdraw up to this quantity.
    * @returns {Promise<void>}
    */
   async withdrawItems(containerWindow, options = {}) {
-    const itemType = options.itemType || null;
+    const itemName = options.itemName || null;
     const partialMatch = options.partialMatch || false;
     const quantity = options.quantity || null;
 
@@ -802,13 +802,13 @@ const RGBot = class {
     }
     else {
       let quantityCollected = 0;
+
       // The first 27 slots in this window should belong to the chest.
       // The following 27 slots are the bot's inventory, and the last 9 are the bot's hotbar.
       for (let i = 0; i < 27; i++) {
         const slot = containerWindow.slots[i];
-        if(slot && (!itemType || this.entityNamesMatch(itemType, slot, {partialMatch}))) {
+        if(slot && (!itemName || this.entityNamesMatch(itemName, slot, {partialMatch}))) {
           if(quantity == null) {
-            console.log('Withdraw ', JSON.stringify(containerWindow.slots));
             // if no quantity specified, grab the entire stack
             await containerWindow.withdraw(slot.type, null, slot.count);
             quantityCollected += slot.count;
@@ -829,8 +829,17 @@ const RGBot = class {
     }
   }
 
+  /**
+   * Deposits one or more items into a container.
+   * @param {Window} containerWindow - the open container Window to deposit items into
+   * @param {object} [options] - optional parameters
+   * @param {string} [options.itemName=null] - an Item to deposit into the container. If not specified, will deposit all Items.
+   * @param {boolean} [options.partialMatch=false] - Allow partial matches to itemName. For example, 'planks' will match any Item containing 'planks' in its name ('spruce_planks', 'oak_planks', etc.).
+   * @param {number} [options.quantity=null] - if itemName is specified, deposit up to this quantity.
+   * @returns {Promise<void>}
+   */
   async depositItems(containerWindow, options = {}) {
-    const itemType = options.itemType || null;
+    const itemName = options.itemName || null;
     const partialMatch = options.partialMatch || false;
     const quantity = options.quantity || null;
 
@@ -839,6 +848,7 @@ const RGBot = class {
     }
     else {
       let quantityDeposited = 0;
+
       // mineflayer has a known bug (almost 8 years old...) where the game updates inventory correctly
       // but mineflayer's internal bot.inventory state is not updated when a Window is open... so we need to
       // iterate over the actual window slots, we CANNOT rely on bot.inventory for this.
@@ -846,24 +856,19 @@ const RGBot = class {
       // The following 27 slots are the bot's inventory, and the last 9 are the bot's hotbar.
       for (let i = 26; i < 63; i++) {
         const slot = containerWindow.slots[i];
-        if(slot && (!itemType || this.entityNamesMatch(itemType, slot, {partialMatch}))) {
+        if(slot && (!itemName || this.entityNamesMatch(itemName, slot, {partialMatch}))) {
           if(quantity == null) {
-            console.log(`Deposit... ${slot.name}, ${slot.type}`, `All Items: ${JSON.stringify(this.bot.inventory.items())}`);
             // if no quantity specified, deposit the entire stack
             await containerWindow.deposit(slot.type, null, slot.count);
             quantityDeposited += slot.count;
-            console.log(`After...  ${quantityDeposited}`);
           }
           else
           {
             // otherwise, figure out how many we still need to deposit
             // don't deposit more than quantity
             let amountToDeposit = quantity - quantityDeposited;
-            console.log('The amount I am trying to deposit: ', amountToDeposit);
             if(amountToDeposit > 0) {
-              console.log('Need more!');
               amountToDeposit = slot.count > amountToDeposit ? amountToDeposit : slot.count;
-              console.log('Slot count: ', slot.count, ' amount after adjustment', amountToDeposit);
               await containerWindow.deposit(slot.type, null, amountToDeposit);
               quantityDeposited += amountToDeposit;
             }

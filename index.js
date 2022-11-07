@@ -15,7 +15,7 @@ function configureBot(bot) {
   rg.setDebug(true);
 
   // routines.simpleStrategy(rg, bot);
-  // routines.intermediateStrategy(rg, bot);
+  routines.intermediateStrategy(rg, bot);
   // routines.advancedStrategy(rg, bot);
 
   bot.on('whisper', async (...args) => {
@@ -24,25 +24,25 @@ function configureBot(bot) {
       const chest = rg.findBlock('chest', { maxDistance: 100});
       await rg.approachBlock(chest);
       const openedChest = await bot.openContainer(chest);
-      await rg.withdrawItems(openedChest, {itemType: 'spruce_log'});
+      await rg.withdrawItems(openedChest, {itemName: 'spruce_log'});
     }
     else if(args[1] === 'chestW3') {
       const chest = rg.findBlock('chest', { maxDistance: 100});
       await rg.approachBlock(chest);
       const openedChest = await bot.openContainer(chest);
-      await rg.withdrawItems(openedChest, {itemType: 'spruce_log', quantity: 3});
+      await rg.withdrawItems(openedChest, {itemName: 'spruce_log', quantity: 3});
     }
     else if(args[1] === 'chestD') {
       const chest = rg.findBlock('chest', { maxDistance: 100});
       await rg.approachBlock(chest);
       const openedChest = await bot.openContainer(chest);
-      await rg.depositItems(openedChest, {itemType: 'spruce_log'});
+      await rg.depositItems(openedChest, {itemName: 'spruce_log'});
     }
     else if(args[1] === 'chestD3') {
       const chest = rg.findBlock('chest', { maxDistance: 100});
       await rg.approachBlock(chest);
       const openedChest = await bot.openContainer(chest);
-      await rg.depositItems(openedChest, {itemType: 'spruce_log', quantity: 3});
+      await rg.depositItems(openedChest, {itemName: 'spruce_log', quantity: 3});
     }
     else if(args[1] === 'close') {
       const chest = rg.findBlock('chest', { maxDistance: 5});
