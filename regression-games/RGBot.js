@@ -829,7 +829,7 @@ const RGBot = class {
     }
   }
 
-  async depositItems(containerWindow, options) {
+  async depositItems(containerWindow, options = {}) {
     const itemType = options.itemType || null;
     const partialMatch = options.partialMatch || false;
     const quantity = options.quantity || null;
@@ -840,6 +840,7 @@ const RGBot = class {
     else {
       let quantityDeposited = 0;
       for(const slot of this.bot.inventory.items()) {
+        console.log(`Comparing...  ${itemType} to ${slot.name}, ${slot.displayName}`);
         if(!itemType || this.entityNamesMatch(itemType, slot, {partialMatch})) {
           if(quantity == null) {
             console.log(`Deposit... ${slot.name}, ${slot.type}`, `All Items: ${JSON.stringify(this.bot.inventory.items())}`);
