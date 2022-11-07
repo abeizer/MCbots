@@ -10,12 +10,12 @@ function intermediateStrategy(rg, bot) {
         // These are the perfect places to quickly craft a pickaxe, which will allow the Bot to collect the village's Bell.
         // First, find and approach the nearest crafting table
         let craftingTable = await rg.findBlock('crafting_table');
-        const pathingSuccessful = await rg.approachBlock(craftingTable);
+        const pathingSuccessful = await rg.approachBlock(craftingTable, {reach: 3});
         if(!pathingSuccessful) {
             // Sometimes the Bot may encounter pathing issues. Since there are two houses with the perfect
             // conditions for this strategy, the Bot can try to get to the second house if it fails to approach the first one.
             craftingTable = await rg.findBlock('crafting_table', { skipClosest: true });
-            await rg.approachBlock(craftingTable);
+            await rg.approachBlock(craftingTable, {reach: 3});
         }
 
         // Next, loot some logs from the chest in the same house.
@@ -25,6 +25,7 @@ function intermediateStrategy(rg, bot) {
         await rg.approachBlock(chest);
         const chestInventoryWindow = await bot.openContainer(chest);
         await rg.withdrawItems(chestInventoryWindow, { itemName: 'spruce_log', quantity: 2 });
+        await chestInventoryWindow.close();
 
         // Craft the components the Bot will need for one pickaxe
         // Turn the logs into 8 planks, and then two of the planks into some sticks
