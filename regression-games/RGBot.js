@@ -802,8 +802,8 @@ const RGBot = class {
     }
     else {
       let quantityCollected = 0;
-      // the first 27 slots in this window should belong to the chest.
-      // the following 27 slots are the bot's inventory, and the last 9 are the bot's hotbar.
+      // The first 27 slots in this window should belong to the chest.
+      // The following 27 slots are the bot's inventory, and the last 9 are the bot's hotbar.
       for (let i = 0; i < 27; i++) {
         const slot = containerWindow.slots[i];
         if(slot && (!itemType || this.entityNamesMatch(itemType, slot, {partialMatch}))) {
@@ -839,9 +839,14 @@ const RGBot = class {
     }
     else {
       let quantityDeposited = 0;
-      for(const slot of this.bot.inventory.items()) {
-        console.log(`Comparing...  ${itemType} to ${slot.name}, ${slot.displayName}`);
-        if(!itemType || this.entityNamesMatch(itemType, slot, {partialMatch})) {
+      // mineflayer has a known bug (almost 8 years old...) where the game updates inventory correctly
+      // but mineflayer's internal bot.inventory state is not updated when a Window is open... so we need to
+      // iterate over the actual window slots, we CANNOT rely on bot.inventory for this.
+      // The first 27 slots in this window should belong to the chest.
+      // The following 27 slots are the bot's inventory, and the last 9 are the bot's hotbar.
+      for (let i = 26; i < 63; i++) {
+        const slot = containerWindow.slots[i];
+        if(slot && (!itemType || this.entityNamesMatch(itemType, slot, {partialMatch}))) {
           if(quantity == null) {
             console.log(`Deposit... ${slot.name}, ${slot.type}`, `All Items: ${JSON.stringify(this.bot.inventory.items())}`);
             // if no quantity specified, deposit the entire stack
