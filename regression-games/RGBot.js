@@ -795,6 +795,8 @@ const RGBot = class {
     const partialMatch = options.partialMatch || false;
     const quantity = options.quantity || null;
 
+    console.log('slots before withdraw: ', JSON.stringify(containerWindow.slots));
+
     // let result = [];
     if (!containerWindow) {
       console.error(`withdrawItems: containerEntity was null or undefined`);
@@ -802,13 +804,11 @@ const RGBot = class {
       console.error(`withdrawItems: containerEntity is empty`);
     }
     else {
-      console.log('slots before withdraw: ', JSON.stringify(containerWindow.slots));
       let quantityCollected = 0;
       for (const slot of containerWindow.slots) {
         if(slot && (!itemType || this.entityNamesMatch(itemType, slot, {partialMatch}))) {
           if(quantity == null) {
             await containerWindow.withdraw(slot.type, null, slot.count);
-            console.log('withdrew ', slot.name + ': ' + JSON.stringify(slot));
             quantityCollected += slot.count;
           }
           else
@@ -817,6 +817,7 @@ const RGBot = class {
             if(amountToWithdraw > 0) {
               amountToWithdraw = (slot.count > amountToWithdraw ? amountToWithdraw : slot.count);
               await containerWindow.withdraw(slot.type, null, amountToWithdraw);
+              console.log('withdrew ', slot.name + ': ' + JSON.stringify(slot));
               quantityCollected += amountToWithdraw;
             }
           }
@@ -836,11 +837,8 @@ const RGBot = class {
     else {
       let quantityDeposited = 0;
       for(const slot of this.bot.inventory.items()) {
-        console.log('SLOT: ', itemType, slot.name, slot.displayName);
         if(!itemType || this.entityNamesMatch(itemType, slot, {partialMatch})) {
-          console.log('matched');
           if(quantity == null) {
-            console.log('null')
             await containerWindow.deposit(slot.type, null, slot.count);
             quantityDeposited += slot.count;
           }
