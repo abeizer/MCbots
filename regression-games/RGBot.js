@@ -802,11 +802,13 @@ const RGBot = class {
       console.error(`withdrawItems: containerEntity is empty`);
     }
     else {
+      console.log('slots before withdraw: ', JSON.stringify(containerWindow.slots));
       let quantityCollected = 0;
       for (const slot of containerWindow.slots) {
         if(slot && (!itemType || this.entityNamesMatch(itemType, slot, {partialMatch}))) {
           if(quantity == null) {
             await containerWindow.withdraw(slot.type, null, slot.count);
+            console.log('withdrew ', slot.name + ': ' + JSON.stringify(slot));
             quantityCollected += slot.count;
           }
           else
