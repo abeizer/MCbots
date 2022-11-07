@@ -842,10 +842,11 @@ const RGBot = class {
       for(const slot of this.bot.inventory.items()) {
         if(!itemType || this.entityNamesMatch(itemType, slot, {partialMatch})) {
           if(quantity == null) {
-            console.log('Deposit ', JSON.stringify(this.bot.inventory.items()));
+            console.log(`Deposit... ${slot.name}, ${slot.type}`, `All Items: ${JSON.stringify(this.bot.inventory.items())}`);
             // if no quantity specified, deposit the entire stack
             await containerWindow.deposit(slot.type, null, slot.count);
             quantityDeposited += slot.count;
+            console.log(`After...  ${quantityDeposited}`);
           }
           else
           {
