@@ -52,7 +52,8 @@ function configureBot(bot) {
     else if(args[1] === 'print') {
       const chest = rg.findBlock('chest', { maxDistance: 5});
       const openedChest = await bot.openContainer(chest);
-      console.log(`Inventory: ${JSON.stringify(rg.getContainerContents(openedChest))}`);
+      console.log(`Bot: ${JSON.stringify(bot.inventory.items())}`);
+      console.log(`Chest: ${JSON.stringify(rg.getContainerContents(openedChest))}`);
     }
   })
 
