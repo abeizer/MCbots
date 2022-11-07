@@ -795,10 +795,6 @@ const RGBot = class {
     const partialMatch = options.partialMatch || false;
     const quantity = options.quantity || null;
 
-    console.log('slots before withdraw: ');
-    console.log(JSON.stringify(containerWindow.slots));
-
-    // let result = [];
     if (!containerWindow) {
       console.error(`withdrawItems: containerEntity was null or undefined`);
     } else if (!containerWindow.slots) {
