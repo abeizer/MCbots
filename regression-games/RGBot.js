@@ -806,10 +806,12 @@ const RGBot = class {
     }
     else {
       let quantityCollected = 0;
-      for (const slot of containerWindow.slots) {
+      // the first 27 slots in this window should belong to the chest.
+      // the following 27 slots are the bot's inventory, and the last 9 are the bot's hotbar.
+      for (let i = 0; i < 27; i++) {
+        const slot = containerWindow.slots[i];
         if(slot && (!itemType || this.entityNamesMatch(itemType, slot, {partialMatch}))) {
           console.log('current slot ', slot.name, ':', slot.type, + '--> ', JSON.stringify(slot));
-
           if(quantity == null) {
             await containerWindow.withdraw(slot.type, null, slot.count);
             quantityCollected += slot.count;
