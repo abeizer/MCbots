@@ -6,13 +6,17 @@ function intermediateStrategy(rg, bot) {
     // goal: Gather wood, use it to craft a pickaxe, and then dig the Bell in the starting village.
     async function startRoutine() {
 
-        // One of the houses in the starting village has a
-        // chest containing logs as well as a crafting table.
-        // This is the perfect place to quickly craft a pickaxe
-        // so that the Bot can collect the village's Bell.
+        // Two of the houses in the starting village have a chest containing logs as well as a crafting table.
+        // These are the perfect places to quickly craft a pickaxe, which will allow the Bot to collect the village's Bell.
         // First, find and approach the nearest crafting table
-        const craftingTable = await rg.findBlock('crafting_table');
-        await rg.approachBlock(craftingTable);
+        let craftingTable = await rg.findBlock('crafting_table');
+        const pathingSuccessful = await rg.approachBlock(craftingTable);
+        if(!pathingSuccessful) {
+            // Sometimes the Bot may encounter pathing issues. Since there are two houses with the perfect
+            // conditions for this strategy, the Bot can try to get to the second house if it fails to approach the first one.
+            craftingTable = await rg.findBlock('crafting_table', { skipClosest: true });
+            await rg.approachBlock(craftingTable);
+        }
 
         // Next, loot some logs from the chest in the same house.
         // The chest has three, but the Bot only needs two to craft the pickaxe,
