@@ -25,19 +25,34 @@ function configureBot(bot) {
       await rg.approachBlock(chest);
       const openedChest = await bot.openContainer(chest);
       await rg.withdrawItems(openedChest, {itemType: 'spruce_log'});
-      // console.log(`Inventory: ${JSON.stringify(rg.getContainerContents(openedChest))}`);
+    }
+    else if(args[1] === 'chestW3') {
+      const chest = rg.findBlock('chest', { maxDistance: 100});
+      await rg.approachBlock(chest);
+      const openedChest = await bot.openContainer(chest);
+      await rg.withdrawItems(openedChest, {itemType: 'spruce_log', quantity: 3});
     }
     else if(args[1] === 'chestD') {
       const chest = rg.findBlock('chest', { maxDistance: 100});
       await rg.approachBlock(chest);
       const openedChest = await bot.openContainer(chest);
       await rg.depositItems(openedChest, {itemType: 'spruce_log'});
-      // console.log(`Inventory: ${JSON.stringify(rg.getContainerContents(openedChest))}`);
+    }
+    else if(args[1] === 'chestD3') {
+      const chest = rg.findBlock('chest', { maxDistance: 100});
+      await rg.approachBlock(chest);
+      const openedChest = await bot.openContainer(chest);
+      await rg.depositItems(openedChest, {itemType: 'spruce_log', quantity: 3});
     }
     else if(args[1] === 'close') {
       const chest = rg.findBlock('chest', { maxDistance: 5});
       const openedChest = await bot.openContainer(chest);
       await openedChest.close();
+    }
+    else if(args[1] === 'print') {
+      const chest = rg.findBlock('chest', { maxDistance: 5});
+      const openedChest = await bot.openContainer(chest);
+      console.log(`Inventory: ${JSON.stringify(rg.getContainerContents(openedChest))}`);
     }
   })
 

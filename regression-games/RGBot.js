@@ -811,20 +811,19 @@ const RGBot = class {
       for (let i = 0; i < 27; i++) {
         const slot = containerWindow.slots[i];
         if(slot && (!itemType || this.entityNamesMatch(itemType, slot, {partialMatch}))) {
-          console.log('current slot ', slot.name, ':', slot.type, + '--> ', JSON.stringify(slot));
           if(quantity == null) {
+            // if no quantity specified, grab the entire stack
             await containerWindow.withdraw(slot.type, null, slot.count);
             quantityCollected += slot.count;
           }
           else
           {
+            // otherwise, figure out how many we still need to withdraw
+            // don't withdraw more than quantity
             let amountToWithdraw = quantity - quantityCollected;
             if(amountToWithdraw > 0) {
-              amountToWithdraw = (slot.count > amountToWithdraw ? amountToWithdraw : slot.count);
-              console.log('withdrawing ', amountToWithdraw, ' out of ', slot.count);
-
+              amountToWithdraw = slot.count > amountToWithdraw ? amountToWithdraw : slot.count;
               await containerWindow.withdraw(slot.type, null, amountToWithdraw);
-              console.log('withdrew.');
               quantityCollected += amountToWithdraw;
             }
           }
@@ -846,15 +845,18 @@ const RGBot = class {
       for(const slot of this.bot.inventory.items()) {
         if(!itemType || this.entityNamesMatch(itemType, slot, {partialMatch})) {
           if(quantity == null) {
+            // if no quantity specified, deposit the entire stack
             await containerWindow.deposit(slot.type, null, slot.count);
             quantityDeposited += slot.count;
           }
           else
           {
+            // otherwise, figure out how many we still need to deposit
+            // don't deposit more than quantity
             let amountToDeposit = quantity - quantityDeposited;
             if(amountToDeposit > 0) {
               amountToDeposit = slot.count > amountToDeposit ? amountToDeposit : slot.count;
-              await containerWindow.deposit(slot.id, null, amountToDeposit);
+              await containerWindow.deposit(slot.type, null, amountToDeposit);
               quantityDeposited += amountToDeposit;
             }
           }
