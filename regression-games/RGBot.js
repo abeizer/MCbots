@@ -808,6 +808,7 @@ const RGBot = class {
         const slot = containerWindow.slots[i];
         if(slot && (!itemType || this.entityNamesMatch(itemType, slot, {partialMatch}))) {
           if(quantity == null) {
+            console.log('Withdraw ', JSON.stringify(containerWindow.slots));
             // if no quantity specified, grab the entire stack
             await containerWindow.withdraw(slot.type, null, slot.count);
             quantityCollected += slot.count;
@@ -840,8 +841,8 @@ const RGBot = class {
       let quantityDeposited = 0;
       for(const slot of this.bot.inventory.items()) {
         if(!itemType || this.entityNamesMatch(itemType, slot, {partialMatch})) {
-          console.log('current slot ', slot.name, ':', slot.type, JSON.stringify(slot));
           if(quantity == null) {
+            console.log('Deposit ', JSON.stringify(containerWindow.slots));
             // if no quantity specified, deposit the entire stack
             await containerWindow.deposit(slot.type, null, slot.count);
             quantityDeposited += slot.count;
