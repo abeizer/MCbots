@@ -22,27 +22,20 @@ function configureBot(bot) {
     if (args[0] === bot.username || args[0] === 'you') { return }
     if(args[1] === 'chestW') {
       const chest = rg.findBlock('chest', { maxDistance: 100});
-      console.log(`Found chest entity: ${JSON.stringify(chest)}`);
-      console.log(`approaching chest: ${JSON.stringify(await rg.approachBlock(chest))}`);
+      await rg.approachBlock(chest);
       const openedChest = await bot.openContainer(chest);
-      console.log(`Opened Chest: ${JSON.stringify(rg.getContainerContents(openedChest))}`);
       await rg.withdrawItems(openedChest, {itemType: 'spruce_log'});
-      console.log(`Inventory: ${JSON.stringify(bot.inventory.items())}`);
-
+      // console.log(`Inventory: ${JSON.stringify(rg.getContainerContents(openedChest))}`);
     }
     else if(args[1] === 'chestD') {
       const chest = rg.findBlock('chest', { maxDistance: 100});
-      console.log(`Found chest entity: ${JSON.stringify(chest)}`);
-      console.log(`approaching chest: ${JSON.stringify(await rg.approachBlock(chest))}`);
+      await rg.approachBlock(chest);
       const openedChest = await bot.openContainer(chest);
-      console.log(`Opened Chest: ${JSON.stringify(openedChest)}`);
       await rg.depositItems(openedChest, {itemType: 'spruce_log'});
-      console.log(`Inventory: ${JSON.stringify(rg.getContainerContents(openedChest))}`);
+      // console.log(`Inventory: ${JSON.stringify(rg.getContainerContents(openedChest))}`);
     }
     else if(args[1] === 'close') {
-      const chest = rg.findBlock('chest', { maxDistance: 100});
-      console.log(`Found chest entity: ${JSON.stringify(chest)}`);
-      console.log(`approaching chest: ${JSON.stringify(await rg.approachBlock(chest))}`);
+      const chest = rg.findBlock('chest', { maxDistance: 5});
       const openedChest = await bot.openContainer(chest);
       await openedChest.close();
     }

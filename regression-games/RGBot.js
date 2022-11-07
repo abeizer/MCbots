@@ -786,7 +786,7 @@ const RGBot = class {
    * @param {Window} containerWindow - the open container Window to withdraw items from
    * @param {object} [options] - optional parameters
    * @param {string} [options.itemType=null] - an Item to withdraw from the container. If not specified, will withdraw all Items.
-   * @param {boolean} [options.partialMatch=false] - TODO
+   * @param {boolean} [options.partialMatch=false]
    * @param {number} [options.quantity=null] - if itemType is specified, withdraw up to this quantity.
    * @returns {Promise<void>}
    */
@@ -795,7 +795,8 @@ const RGBot = class {
     const partialMatch = options.partialMatch || false;
     const quantity = options.quantity || null;
 
-    console.log('slots before withdraw: ', JSON.stringify(containerWindow.slots));
+    console.log('slots before withdraw: ');
+    console.log(JSON.stringify(containerWindow.slots));
 
     // let result = [];
     if (!containerWindow) {
@@ -806,6 +807,8 @@ const RGBot = class {
     else {
       let quantityCollected = 0;
       for (const slot of containerWindow.slots) {
+        console.log('current slot ', slot.name, ':', slot.type, + '--> ', JSON.stringify(slot));
+
         if(slot && (!itemType || this.entityNamesMatch(itemType, slot, {partialMatch}))) {
           if(quantity == null) {
             await containerWindow.withdraw(slot.type, null, slot.count);
@@ -816,8 +819,10 @@ const RGBot = class {
             let amountToWithdraw = quantity - quantityCollected;
             if(amountToWithdraw > 0) {
               amountToWithdraw = (slot.count > amountToWithdraw ? amountToWithdraw : slot.count);
+              console.log('withdrawing ', amountToWithdraw, ' out of ', slot.count);
+
               await containerWindow.withdraw(slot.type, null, amountToWithdraw);
-              console.log('withdrew ', slot.name + ': ' + JSON.stringify(slot));
+              console.log('withdrew.');
               quantityCollected += amountToWithdraw;
             }
           }
