@@ -856,6 +856,7 @@ const RGBot = class {
             let amountToDeposit = quantity - quantityDeposited;
             if(amountToDeposit > 0) {
               amountToDeposit = slot.count > amountToDeposit ? amountToDeposit : slot.count;
+              console.log('Amount to Desposit: ', amountToDeposit);
               await containerWindow.deposit(slot.type, null, amountToDeposit);
               quantityDeposited += amountToDeposit;
             }
