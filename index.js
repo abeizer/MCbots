@@ -3,12 +3,9 @@ const { pathfinder, Movements } = require('mineflayer-pathfinder')
 const { GoalNear, GoalBlock, GoalGetToBlock, GoalLookAtBlock, GoalXZ, GoalY, GoalInvert, GoalFollow } = require('mineflayer-pathfinder').goals
 const { Vec3 } = require('vec3');
 
-const RGBot = require('./regression-games').RGBot;
+const RGBot = require('rg-bot').RGBot;
 const routines = require('./routines');
 
-/**
- * @param {mineflayer.Bot} bot - The Mineflayer bot
- */
 function configureBot(bot) {
 
   const rg = new RGBot(bot);
