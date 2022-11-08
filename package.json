@@ -20,6 +20,6 @@
     "prismarine-viewer": "^1.23.0",
     "rg-match-info": "^1.0.0",
     "vec3": "^0.1.7",
-    "rg-bot": "file:../../../../../../RegressionBot"
+    "rg-bot": "file:~/Documents/RG/RegressionBot"
   }
 }
