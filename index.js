@@ -14,46 +14,20 @@ function configureBot(bot) {
   const rg = new RGBot(bot);
   rg.setDebug(true);
 
-  // routines.simpleStrategy(rg, bot);
-  routines.intermediateStrategy(rg, bot);
-  // routines.advancedStrategy(rg, bot);
+  // announce in chat when Bot spawns
+  bot.on('spawn', function() {
+    rg.chat('Hello World');
+  })
 
-  bot.on('whisper', async (...args) => {
-    if (args[0] === bot.username || args[0] === 'you') { return }
-    if(args[1] === 'chestW') {
-      const chest = rg.findBlock('chest', { maxDistance: 100});
-      await rg.approachBlock(chest);
-      const openedChest = await bot.openContainer(chest);
-      await rg.withdrawItems(openedChest, {itemName: 'spruce_log'});
+  // use in-game chat to make the Bot collect or drop wood for you
+  bot.on('chat', async function (username, message) {
+    if(username === bot.username) return
+
+    if(message === 'collect wood') {
+      await rg.findAndDigBlock('log', {partialMatch: true});
     }
-    else if(args[1] === 'chestW3') {
-      const chest = rg.findBlock('chest', { maxDistance: 100});
-      await rg.approachBlock(chest);
-      const openedChest = await bot.openContainer(chest);
-      await rg.withdrawItems(openedChest, {itemName: 'spruce_log', quantity: 3});
-    }
-    else if(args[1] === 'chestD') {
-      const chest = rg.findBlock('chest', { maxDistance: 100});
-      await rg.approachBlock(chest);
-      const openedChest = await bot.openContainer(chest);
-      await rg.depositItems(openedChest, {itemName: 'spruce_log'});
-    }
-    else if(args[1] === 'chestD3') {
-      const chest = rg.findBlock('chest', { maxDistance: 100});
-      await rg.approachBlock(chest);
-      const openedChest = await bot.openContainer(chest);
-      await rg.depositItems(openedChest, {itemName: 'spruce_log', quantity: 3});
-    }
-    else if(args[1] === 'close') {
-      const chest = rg.findBlock('chest', { maxDistance: 5});
-      const openedChest = await bot.openContainer(chest);
-      await openedChest.close();
-    }
-    else if(args[1] === 'print') {
-      const chest = rg.findBlock('chest', { maxDistance: 5});
-      const openedChest = await bot.openContainer(chest);
-      console.log(`Bot: ${JSON.stringify(bot.inventory.items())}`);
-      console.log(`Chest: ${JSON.stringify(rg.getContainerContents(openedChest))}`);
+    else if (message === 'drop wood') {
+      await rg.dropInventoryItem('log', {partialMatch: true, quantity: 1});
     }
   })
 
