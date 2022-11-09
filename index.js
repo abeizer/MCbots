@@ -9,7 +9,7 @@ function configureBot(bot) {
   bot.setDebug(true);
 
   // announce in chat when Bot spawns
-  bot.mineflayer.on('spawn', function() {
+  bot.mineflayer().on('spawn', function() {
     bot.chat('Hello World');
   })
 
