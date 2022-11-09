@@ -15,7 +15,7 @@ function configureBot(bot) {
 
   // use in-game chat to make the Bot collect or drop wood for you
   bot.on('chat', async function (username, message) {
-    if(username === bot.username) return
+    if(username === bot.mineflayer().username) return
 
     if(message === 'collect wood') {
       await bot.findAndDigBlock('log', {partialMatch: true});
