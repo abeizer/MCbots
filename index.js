@@ -1,11 +1,13 @@
 const mineflayer = require('mineflayer')
 const routines = require('./routines');
+const TestRGBot = require('./TestRgBot');
 
 /**
- * @param {RGBot} bot
+ * @param {RGBot} realBot
  */
-function configureBot(bot) {
+function configureBot(realBot) {
 
+  let bot = new TestRGBot(realBot.mineflayer());
   bot.setDebug(true);
 
   // announce in chat when Bot spawns
@@ -17,17 +19,39 @@ function configureBot(bot) {
   bot.on('chat', async function (username, message) {
     if(username === bot.mineflayer().username) return
 
-    if(message === 'collect wood') {
+    if(message === 'parkour on') {
+      bot.allowParkour(true);
+    }
+    else if (message === 'parkour off') {
+      bot.allowParkour(false);
+    }
+    else if (message === 'dig on') {
+      bot.allowDigWhilePathing(true);
+    }
+    else if (message === 'dig off') {
+      bot.allowDigWhilePathing(false);
+    }
+    else if(message === 'dig wood') {
+      await bot.findAndDigBlock('log', {partialMatch: true, skipCollection: true});
+    }
+    else if(message === 'collect wood') {
       await bot.findAndDigBlock('log', {partialMatch: true});
     }
-    else if (message === 'drop wood') {
-      await bot.dropInventoryItem('log', {partialMatch: true, quantity: 1});
+    else if (message === 'to string') {
+      bot.chat(bot.vecToString(bot.mineflayer().entity.position))
+    }
+    else if (message === 'to vec') {
+      bot.chat(bot.vecFromString("1.0, 2.0, 3.0").toString())
+    }
+    else if (message === 'find item') {
+      bot.findItemOnGround('log', {partialMatch: true})
+    }
+    else if (message === 'find me') {
+      const entity = bot.findEntity({targetName: 'FatalCrux', attackable: true})
+      await bot.approachEntity(entity)
     }
   })
-
 }
-
-
 
 
 exports.configureBot = configureBot
