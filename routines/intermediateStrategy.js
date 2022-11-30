@@ -1,6 +1,6 @@
 // This strategy is an intermediate example of how to craft and equip items, and harvest blocks.
 // The Bot will create a pickaxe and use it to mine the bell in the starting village
-function intermediateStrategy(rg, bot) {
+function intermediateStrategy(rg) {
 
     // This is our main loop. The Bot will invoke this on spawn.
     // goal: Gather wood, use it to craft a pickaxe, and then dig the Bell in the starting village.
@@ -23,7 +23,7 @@ function intermediateStrategy(rg, bot) {
         // so we won't let it be too greedy.
         const chest = rg.findBlock('chest', { maxDistance: 10 });
         await rg.approachBlock(chest);
-        const chestInventoryWindow = await bot.openContainer(chest);
+        const chestInventoryWindow = await rg.mineflayer().openContainer(chest);
         await rg.withdrawItems(chestInventoryWindow, { itemName: 'spruce_log', quantity: 2 });
         await chestInventoryWindow.close();
 
@@ -43,7 +43,7 @@ function intermediateStrategy(rg, bot) {
     }
 
     // When spawned, start
-    bot.on('spawn', async () => {
+    rg.on('spawn', async () => {
         rg.chat('Hello! I have arrived!');
         startRoutine();
     });
