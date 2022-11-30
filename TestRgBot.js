@@ -14,7 +14,6 @@ const { Vec3 } = require('vec3');
  *    <i>Mineflayer API documentation - https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md </i><br>
  *    <i>Mineflayer Pathfinder API documentation - https://github.com/PrismarineJS/mineflayer-pathfinder/blob/master/readme.md </i><br>
  *
- *
  *  <b><u>Vec3</u></b><br>
  *    Mineflayer indicates the position of an object as a point along 3 axes. These points are represented as Vec3 instances in the following format:
  *      {x (south), y (up), z(west)} <br>
@@ -56,13 +55,16 @@ const TestRGBot = class {
 
         this.#bot = bot;
     }
-
+    
     /**
-     * Returns the mineflayer Bot instance controlled by the RGBot. Use this to interact with mineflayer's API directly.
-     * @returns {Bot} The mineflayer Bot instance controlled by the RGBot
+     * Log a message if debug is enabled.
+     * @param {string} message
+     * @returns {void}
      */
-    mineflayer() {
-        return this.#bot;
+     #log(message) {
+        if (this.debug) {
+            console.log(message);
+        }
     }
 
     /**
@@ -75,10 +77,36 @@ const TestRGBot = class {
     }
 
     /**
+     * Returns the mineflayer Bot instance controlled by the RGBot. Use this to interact with mineflayer's API directly.
+     * @returns {Bot} The mineflayer Bot instance controlled by the RGBot
+     * @see {@link https://github.com/PrismarineJS/mineflayer/blob/master/docs/api.md|MineFlayer API}
+     *
+     * @example <caption>Accessing mineflayer API through mineflayer()</caption>
+     * // returns the bot's username from mineflayer
+     * rgBot.mineflayer().username
+     */
+    mineflayer() {
+        return this.#bot;
+    }
+
+    /**
+     * Listen for an event and invoke a function when it fires.
+     * @param {string} event The event to listen for
+     * @param {function} func Function that is invoked when event fires
+     * @returns {void}
+     * 
+     * @example <caption>Reacting to the spawn event</caption>
+     * rgBot.on('spawn', () => { rgBot.chat('Hello World!') })
+     */
+    on(event, func) {
+        this.#bot.on(event, func);
+    }
+
+    /**
      * Enable or disable use of parkour while pathing to a destination. Parkour is disabled by default.
      * Parkour movements include moving vertically over trees and other structures rather than walking around them, and jumping over gaps instead of laying Blocks to cross them.
-     * Enabling this may allow your Bot to reach destinations faster and place fewer blocks to achieve upwards movement.
-     * However, use of parkour is more likely to cause the Bot to become stuck during pathing and may require additional logic to handle movement issues.
+     * Enabling parkour may allow your Bot to reach destinations faster and place fewer blocks to achieve upwards movement.
+     * However, this is more likely to cause the Bot to become stuck during pathing and may require additional logic to handle movement issues.
      * @param {boolean} allowParkour Whether the Bot is allowed to use parkour movements to reach a destination
      * @returns {void}
      */
@@ -88,33 +116,12 @@ const TestRGBot = class {
 
     /**
      * Enable or disable the Bot's ability to dig blocks while pathing to a destination. Digging is enabled by default.
-     * Disabling this will allow your Bot to reach destinations without breaking important structures that stand between the bot and its goal.
+     * Disabling digging will allow your Bot to reach destinations without breaking important structures that stand between the bot and its goal.
      * @param {boolean} allowDig Whether the Bot is allowed to dig Blocks in order to remove obstacles that stand in the way of its destination
      * @returns {void}
      */
     allowDigWhilePathing(allowDig) {
         this.#bot.pathfinder.movements.canDig = allowDig;
-    }
-
-    /**
-     * Listen for an event and invoke a function when it fires.
-     * @param {string} event The event to listen for
-     * @param {function} func Function that is invoked when event fires
-     * @returns {void}
-     */
-    on(event, func) {
-        this.#bot.on(event, func);
-    }
-
-    /**
-     * Log a message if debug is enabled.
-     * @param {string} message
-     * @returns {void}
-     */
-    #log(message) {
-        if (this.debug) {
-            console.log(message);
-        }
     }
 
     /**
@@ -140,57 +147,13 @@ const TestRGBot = class {
     }
 
     /**
-     * Choose a random point within a minimum and maximum radius around the Bot and approach it.
-     * Points are calculated on the X and Z axes.
-     * @param {number} minDistance=10 The minimum distance the point may be from the Bot
-     * @param {number} maxDistance=10 The maximum distance the point may be from the Bot
-     * @returns {Promise<boolean>} true if the Bot successfully reached its wander goal, else false
-     */
-    async wander(minDistance = 10, maxDistance = 10) {
-        if (minDistance < 1) {
-            minDistance = 1;
-        }
-        if (maxDistance < minDistance) {
-            maxDistance = minDistance;
-        }
-        let xRange = (minDistance + (Math.random() * (maxDistance - minDistance))) * (Math.random() < 0.5 ? -1 : 1);
-        let zRange = (minDistance + (Math.random() * (maxDistance - minDistance))) * (Math.random() < 0.5 ? -1 : 1);
-        let newX = this.#bot.entity.position.x + xRange;
-        let newZ = this.#bot.entity.position.z + zRange;
-
-        const pathFunc = async () => {
-            await this.#bot.pathfinder.goto(new GoalXZ(newX, newZ));
-        };
-        return await this.handlePath(pathFunc);
-    }
-
-    /**
-     * <i><b>Experimental</b></i>
-     *
-     * Find the nearest entity matching the search criteria.
-     * @param {object} [options] Optional parameters
-     * @param {string} [options.targetName=null] Target a specific type of Entity. If not specified, then may return an Entity of any type
-     * @param {boolean} [options.attackable=false] Only return entities that can be attacked
-     * @returns {Entity | null} The nearest Entity matching the search criteria, or null if no matching Entity can be found
-     */
-    findEntity(options = {}) {
-        const targetName = options.targetName || null;
-        const attackable = options.attackable || false;
-        this.#log(`Searching for Entity ${targetName}`);
-        return this.#bot.nearestEntity(entity => {
-            if(entity.isValid && (!targetName || this.entityNamesMatch(targetName, entity) || entity.username === targetName)) {
-                if(!attackable || (attackable && (entity.type === 'mob' || entity.type === 'player'))) {
-                    return true;
-                }
-            }
-            return false;
-        })
-    }
-
-    /**
      * Represent a Vec3 position as a string in the format 'x, y, z'.
      * @param {Vec3} position A Vec3 object representing the position of some Entity
      * @returns {string} A string representation of the Vec3 position
+     * 
+     * @example
+     * // returns "15.0, 63, -22.2"
+     * rgBot.vecToString(new Vec(15.0, 63, -22.2))
      */
     vecToString(position) {
         return `${position.x}, ${position.y}, ${position.z}`;
@@ -201,6 +164,10 @@ const TestRGBot = class {
      * This is useful for creating chat commands that involve specific coordinates from the Player.
      * @param {string} positionString
      * @returns {Vec3 | null} A Vec3 representation of the position string, or null if the positionString was invalid
+     * 
+     * @example
+     * // returns new Vec(15.0, 63, -22.2)
+     * rgBot.vecFromString("15.0, 63, -22.2")
      */
     vecFromString(positionString) {
         const coordinates = positionString.split(",")
@@ -219,6 +186,21 @@ const TestRGBot = class {
      * Accepts an Entity and returns the displayName of the Entity, or its name if it has no displayName.
      * @param {Entity | Block | Item} entity
      * @returns {string | undefined}
+     *
+     * @example 
+     * // entity -> {name: "ender_dragon", displayName: "Ender Dragon"}
+     * // returns "Ender Dragon"
+     * rgBot.getEntityName(entity)
+     * 
+     * @example 
+     * // entity -> {name: "cocoa_beans", displayName: undefined}
+     * // returns "cocoa_beans"
+     * rgBot.getEntityName(entity)
+     * 
+     * @example 
+     * // entity -> {name: undefined, displayName: undefined}
+     * // returns undefined
+     * rgBot.getEntityName(entity)
      */
     getEntityName(entity) {
         if (entity.objectType === "Item" && entity.onGround) {
@@ -238,6 +220,10 @@ const TestRGBot = class {
      * If the Item isn't defined in minecraft's data, returns null instead.
      * @param {string} itemName
      * @returns {Item | null} The Item's definition (<i>not</i> an Item instance)
+     * 
+     * @example 
+     * // returns {}
+     * rgBot.getEntityName(entity)
      */
     getItemDefinitionByName(itemName) {
         try {
@@ -267,7 +253,7 @@ const TestRGBot = class {
      * Determines whether an Entity's name and/or displayName are equal to a targetName string.
      * @param {string} targetName
      * @param {Entity} entity
-     * @param {object} [options] Optional parameters
+     * @param {object} options={} Optional parameters
      * @param {boolean} [options.partialMatch=false] Allow partial matches. For example, 'planks' will match any Entity containing 'planks' in its name ('spruce_planks', 'oak_planks', etc.)
      * @returns {boolean}
      */
@@ -280,9 +266,71 @@ const TestRGBot = class {
     }
 
     /**
+     * Attempt pathfinding. If the Bot becomes 'stuck' then cancel pathfinding.
+     * The Bot is considered 'stuck' if it fails to move or perform mining/building actions during a specified interval.
+     * @param {function} pathFunc A function utilizing pathfinder to move the Bot
+     * @param {object} options={} Optional parameters
+     * @param {number} [options.interval=5000] How long in ms a Bot must be inactive to be considered 'stuck'
+     * @returns {Promise<boolean>} true if pathing completes, or false if pathing is cancelled or otherwise interrupted
+     */
+    async handlePath(pathFunc, options = {}) {
+        const interval = options.interval || 5000;
+        let previousPosition = this.#bot.entity.position;
+        let wasActive = true;
+        let stuck = false;
+
+        const checkPosition = () => {
+            let currentPosition = this.#bot.entity.position;
+            let isActive = this.#bot.pathfinder.isMining() || this.#bot.pathfinder.isBuilding();
+            if (currentPosition.equals(previousPosition, 0.005) && !wasActive && !isActive) {
+                // if the bot hasn't moved or performed other actions then we are stuck
+                // stop pathfinder and remove its current goal
+                console.error(`handlePath: Bot is stuck. Stopping current path.`);
+                stuck = true;
+                this.#bot.pathfinder.setGoal(null);
+                this.#bot.pathfinder.stop();
+            } else {
+                previousPosition = currentPosition;
+                wasActive = isActive;
+            }
+        }
+
+        const timer = setInterval(checkPosition, interval);
+        try {
+            await pathFunc();
+        } finally {
+            clearInterval(timer);
+            return !stuck;
+        }
+    }
+
+    /**
+     * <i><b>Experimental</b></i>
+     *
+     * Find the nearest entity matching the search criteria.
+     * @param {object} options={} Optional parameters
+     * @param {string} [options.targetName=undefined] Target a specific type of Entity. If not specified, then may return an Entity of any type
+     * @param {boolean} [options.attackable=false] Only return entities that can be attacked
+     * @returns {Entity | null} The nearest Entity matching the search criteria, or null if no matching Entity can be found
+     */
+    findEntity(options = {}) {
+        const targetName = options.targetName || undefined;
+        const attackable = options.attackable || false;
+        this.#log(`Searching for Entity ${targetName}`);
+        return this.#bot.nearestEntity(entity => {
+            if(entity.isValid && (!targetName || this.entityNamesMatch(targetName, entity) || entity.username === targetName)) {
+                if(!attackable || (attackable && (entity.type === 'mob' || entity.type === 'player'))) {
+                    return true;
+                }
+            }
+            return false;
+        })
+    }
+
+    /**
      * The Bot will approach the given Entity.
      * @param {Entity | Item} entity The Entity to approach
-     * @param {object} [options] Optional parameters
+     * @param {object} options={} Optional parameters
      * @param {number} [options.reach=1] The Bot will approach and stand within this reach of the Entity
      * @returns {Promise<boolean>} true if the Bot successfully reaches the Entity, else false
      */
@@ -311,7 +359,7 @@ const TestRGBot = class {
      *
      * The Bot will follow the given Entity.
      * @param {Entity} entity The Entity to follow
-     * @param {object} [options} Optional parameters
+     * @param {object} options={} Optional parameters
      * @param {number} [options.reach=2] The Bot will follow and remain within this reach of the Entity
      * @returns {Promise<void>}
      */
@@ -330,7 +378,7 @@ const TestRGBot = class {
      *
      * The Bot will avoid the given Entity.
      * @param {Entity} entity The Entity to avoid
-     * @param {object} [options] Optional parameters
+     * @param {object} options={} Optional parameters
      * @param {number} [options.reach=5] The Bot will not move within this reach of the Entity
      * @returns {Promise<void>}
      */
@@ -366,9 +414,34 @@ const TestRGBot = class {
     }
 
     /**
+     * Choose a random point within a minimum and maximum radius around the Bot and approach it.
+     * Points are calculated on the X and Z axes.
+     * @param {number} minDistance=10 The minimum distance the point may be from the Bot
+     * @param {number} maxDistance=10 The maximum distance the point may be from the Bot
+     * @returns {Promise<boolean>} true if the Bot successfully reached its wander goal, else false
+     */
+    async wander(minDistance = 10, maxDistance = 10) {
+        if (minDistance < 1) {
+            minDistance = 1;
+        }
+        if (maxDistance < minDistance) {
+            maxDistance = minDistance;
+        }
+        let xRange = (minDistance + (Math.random() * (maxDistance - minDistance))) * (Math.random() < 0.5 ? -1 : 1);
+        let zRange = (minDistance + (Math.random() * (maxDistance - minDistance))) * (Math.random() < 0.5 ? -1 : 1);
+        let newX = this.#bot.entity.position.x + xRange;
+        let newZ = this.#bot.entity.position.z + zRange;
+
+        const pathFunc = async () => {
+            await this.#bot.pathfinder.goto(new GoalXZ(newX, newZ));
+        };
+        return await this.handlePath(pathFunc);
+    }
+
+    /**
      * Attempt to locate the nearest block of the given type within a specified range from the Bot.
      * @param blockType {string} The displayName or name of the block to find
-     * @param {object} [options} Optional parameters
+     * @param {object} options={} Optional parameters
      * @param {boolean} [options.partialMatch=false] Find blocks whose name / displayName contains blockType. (Ex. 'log' may find any of 'spruce_log', 'oak_log', etc.)
      * @param {boolean} [options.onlyFindTopBlocks=false] Will not return any blocks that are beneath another block
      * @param {number} [options.maxDistance=50] Find any Blocks matching the search criteria up to and including this distance from the Bot
@@ -424,48 +497,9 @@ const TestRGBot = class {
     }
 
     /**
-     * Attempt pathfinding. If the Bot becomes 'stuck' then cancel pathfinding.
-     * The Bot is considered 'stuck' if it fails to move or perform mining/building actions during a specified interval.
-     * @param {function} pathFunc A function utilizing pathfinder to move the Bot
-     * @param {object} [options] Optional parameters
-     * @param {number} [options.interval=5000] How long in ms a Bot must be inactive to be considered 'stuck'
-     * @returns {Promise<boolean>} true if pathing completes, or false if pathing is cancelled or otherwise interrupted
-     */
-    async handlePath(pathFunc, options = {}) {
-        const interval = options.interval || 5000;
-        let previousPosition = this.#bot.entity.position;
-        let wasActive = true;
-        let stuck = false;
-
-        const checkPosition = () => {
-            let currentPosition = this.#bot.entity.position;
-            let isActive = this.#bot.pathfinder.isMining() || this.#bot.pathfinder.isBuilding();
-            if (currentPosition.equals(previousPosition, 0.005) && !wasActive && !isActive) {
-                // if the bot hasn't moved or performed other actions then we are stuck
-                // stop pathfinder and remove its current goal
-                console.error(`handlePath: Bot is stuck. Stopping current path.`);
-                stuck = true;
-                this.#bot.pathfinder.setGoal(null);
-                this.#bot.pathfinder.stop();
-            } else {
-                previousPosition = currentPosition;
-                wasActive = isActive;
-            }
-        }
-
-        const timer = setInterval(checkPosition, interval);
-        try {
-            await pathFunc();
-        } finally {
-            clearInterval(timer);
-            return !stuck;
-        }
-    }
-
-    /**
      * The Bot will approach and stand within reach of the given Block.
      * @param {Block} block The Block instance to approach
-     * @param {object} [options] Optional parameters
+     * @param {object} options={} Optional parameters
      * @param {number} [options.reach=5]
      * @returns {Promise<boolean>} true if pathing was successfully completed or false if pathing could not be completed
      */
@@ -487,7 +521,7 @@ const TestRGBot = class {
      * Move directly adjacent to a target Block and place another Block from the Bot's inventory against it.
      * @param {string} blockName The name of the Block to place. Must be available in the Bot's inventory
      * @param {Block} targetBlock The target Block to place the new Block on/against
-     * @param {object} [options] Optional parameters
+     * @param {object} options={} Optional parameters
      * @param {Vec3} [options.faceVector=Vec3(0, 1, 0)] The face of the targetBlock to place the new block against (Ex. Vec3(0, 1, 0) represents the topmost face of the targetBlock)
      * @param {number} [options.reach=5] The Bot will stand within this reach of the targetBlock while placing the new Block
      * @returns {Promise<void>}
@@ -513,7 +547,6 @@ const TestRGBot = class {
             }
             await this.#bot.placeBlock(targetBlock, faceVector); // place it
         }
-
     }
 
     /**
@@ -578,7 +611,7 @@ const TestRGBot = class {
      * Locate and dig the closest Block of a given type within a maximum distance from the Bot.
      * This method will equip the most appropriate tool in the Bot's inventory for this Block type.
      * @param {string} blockType The name of the Block to find and dig
-     * @param {object} [options] Optional parameters
+     * @param {object} options={} Optional parameters
      * @param {boolean} [options.partialMatch=false] Find blocks whose name / displayName contains blockType. (Ex. 'log' may find any of 'spruce_log', 'oak_log', etc.)
      * @param {boolean} [options.onlyFindTopBlocks=false] Will not attempt to dig any Blocks that are beneath another Block
      * @param {number} [options.maxDistance=50] Find any Blocks matching the search criteria up to and including this distance from the Bot
@@ -636,66 +669,9 @@ const TestRGBot = class {
     }
 
     /**
-     * Returns a list of all Items that are on the ground within a maximum distance from the Bot (can be empty).
-     * @param {object} [options] Optional parameters
-     * @param {string} [options.itemName=null] Find only Items with this name
-     * @param {boolean} [options.partialMatch=false] If itemName is defined, find Items whose names / displayNames contain itemName. (Ex. 'boots' may find any of 'iron_boots', 'golden_boots', etc.)
-     * @param {number} [options.maxDistance=50] Find any Items matching the search criteria up to and including this distance from the Bot
-     * @returns {Item[]} The list of Items found on the ground (can be empty)
-     */
-    findItemsOnGround(options = {}) {
-        const itemName = options.itemName || null;
-        const partialMatch = options.partialMatch || false;
-        const maxDistance = options.maxDistance || 50;
-        this.#log(`Detecting all items on the ground within a max distance of ${maxDistance}`);
-        // this.#bot.entities is a map of entityId : entity
-        return Object.values(this.#bot.entities).filter((entity) => {
-            if (entity.objectType === "Item" && entity.onGround) {
-                const itemEntity = this.getItemDefinitionById(entity.metadata[8].itemId);
-                if(!itemName || this.entityNamesMatch(itemName, itemEntity, {partialMatch})) {
-                    return this.#bot.entity.position.distanceTo(entity.position) <= maxDistance;
-                }
-            }
-        });
-    }
-
-    /**
-     * Collects all Items on the ground within a maximum distance from the Bot.
-     * @param {object} [options] Optional parameters
-     * @param {string} [options.itemName=null] Find and collect only Items with this name
-     * @param {boolean} [options.partialMatch=false] If itemName is defined, find Items whose names / displayNames contain itemName. (Ex. 'boots' may find any of 'iron_boots', 'golden_boots', etc.).
-     * @param {number} [options.maxDistance=50] Find and collect any Items matching the search criteria up to and including this distance from the Bot
-     * @returns {Promise<Item[]>} A list of Item definitions for each Item collected from the ground (can be empty)
-     */
-    async findAndCollectItemsOnGround(options = {}) {
-        const itemName = options.itemName || null;
-        const partialMatch = options.partialMatch || false;
-        const maxDistance = options.maxDistance || 50;
-        this.#log(`Collecting all items on the ground within a range of ${maxDistance}`);
-        const itemsToCollect = this.findItemsOnGround({itemName, partialMatch, maxDistance});
-
-        let result = [];
-        for(let itemToCollect of itemsToCollect) {
-            // check to see if item still exists in world
-            const itemEntity = this.getItemDefinitionById(itemToCollect.metadata[8].itemId);
-            const itemName = this.getEntityName(itemEntity);
-            if(this.findItemOnGround(itemName, {maxDistance}) != null) {
-                // if it is on the ground, then approach it and collect it.
-                if(await this.approachEntity(itemToCollect)) {
-                    result.push(itemToCollect)
-                }
-            } else {
-                // if it isn't, then we will assume we've already picked it up
-                result.push(itemToCollect);
-            }
-        }
-        return result;
-    }
-
-    /**
      * Locate the closest Item with the given name within a maximum distance from the Bot, or null if no matching Items are found.
      * @param {string} itemName
-     * @param {object} [options] Optional parameters
+     * @param {object} options={} Optional parameters
      * @param {boolean} [options.partialMatch=false] Locate any items whose name / displayName contains itemName. (Ex. 'wooden_axe', 'stone_axe', 'diamond_axe', etc. will all satisfy itemName 'axe')
      * @param {number} [options.maxDistance=30] Find any Items matching the search criteria up to and including this distance from the Bot
      * @returns {Item | null}
@@ -715,9 +691,104 @@ const TestRGBot = class {
     }
 
     /**
+     * Returns a list of all Items that are on the ground within a maximum distance from the Bot (can be empty).
+     * @param {object} options={} Optional parameters
+     * @param {string} [options.itemName=undefined] Find only Items with this name
+     * @param {boolean} [options.partialMatch=false] If itemName is defined, find Items whose names / displayNames contain itemName. (Ex. 'boots' may find any of 'iron_boots', 'golden_boots', etc.)
+     * @param {number} [options.maxDistance=50] Find any Items matching the search criteria up to and including this distance from the Bot
+     * @returns {Item[]} The list of Items found on the ground (can be empty)
+     */
+    findItemsOnGround(options = {}) {
+        const itemName = options.itemName || undefined;
+        const partialMatch = options.partialMatch || false;
+        const maxDistance = options.maxDistance || 50;
+        this.#log(`Detecting all items on the ground within a max distance of ${maxDistance}`);
+        // this.#bot.entities is a map of entityId : entity
+        return Object.values(this.#bot.entities).filter((entity) => {
+            if (entity.objectType === "Item" && entity.onGround) {
+                const itemEntity = this.getItemDefinitionById(entity.metadata[8].itemId);
+                if(!itemName || this.entityNamesMatch(itemName, itemEntity, {partialMatch})) {
+                    return this.#bot.entity.position.distanceTo(entity.position) <= maxDistance;
+                }
+            }
+        });
+    }
+
+    /**
+     * Collects all Items on the ground within a maximum distance from the Bot.
+     * @param {object} options={} Optional parameters
+     * @param {string} [options.itemName=undefined] Find and collect only Items with this name
+     * @param {boolean} [options.partialMatch=false] If itemName is defined, find Items whose names / displayNames contain itemName. (Ex. 'boots' may find any of 'iron_boots', 'golden_boots', etc.).
+     * @param {number} [options.maxDistance=50] Find and collect any Items matching the search criteria up to and including this distance from the Bot
+     * @returns {Promise<Item[]>} A list of Item definitions for each Item collected from the ground (can be empty)
+     */
+    async findAndCollectItemsOnGround(options = {}) {
+        const itemName = options.itemName || undefined;
+        const partialMatch = options.partialMatch || false;
+        const maxDistance = options.maxDistance || 50;
+        this.#log(`Collecting all items on the ground within a range of ${maxDistance}`);
+        const itemsToCollect = this.findItemsOnGround({itemName, partialMatch, maxDistance});
+
+        let result = [];
+        for(let itemToCollect of itemsToCollect) {
+            // check to see if item still exists in world
+            const itemEntityToCollect = this.getItemDefinitionById(itemToCollect.metadata[8].itemId);
+            const itemNameToCollect = this.getEntityName(itemEntityToCollect);
+            if(this.findItemOnGround(itemNameToCollect, {maxDistance}) != null) {
+                // if it is on the ground, then approach it and collect it.
+                if(await this.approachEntity(itemToCollect)) {
+                    result.push(itemToCollect)
+                }
+            } else {
+                // if it isn't, then we will assume we've already picked it up
+                result.push(itemToCollect);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns true if the Bot has one or more of a specified Item in its inventory, or false if it does not.
+     * @param {string} itemName
+     * @param {object} options={} Optional parameters
+     * @param {boolean} [options.partialMatch=false] Check for any items whose name / displayName contains itemName. (Ex. 'wooden_axe', 'stone_axe', 'diamond_axe', etc. will all satisfy itemName 'axe')
+     * @param {number} [options.quantity=1] The minimum amount of this Item the Bot must have
+     * @returns {boolean}
+     */
+    inventoryContainsItem(itemName, options = {}) {
+        const partialMatch = options.partialMatch || false;
+        const quantity = options.quantity || 1;
+        if (quantity < 1) {
+            console.error(`inventoryContainsItem: invalid quantity ${quantity}`);
+            return false;
+        }
+        return this.getInventoryItemQuantity(itemName, {partialMatch}) >= quantity;
+    }
+
+    /**
+     * Return how many of a specific item the Bot currently holds in its inventory.
+     * @param {string} itemName
+     * @param {object} options={} Optional parameters
+     * @param {boolean} [options.partialMatch=false] Count any items whose name / displayName contains itemName. (Ex. 'wooden_axe', 'stone_axe', 'diamond_axe', etc. will all be included in the quantity for itemName 'axe').
+     * @returns {int}
+     */
+    getInventoryItemQuantity(itemName, options = {}) {
+        const partialMatch = options.partialMatch || false;
+        let quantityAvailable = 0;
+        this.#bot.inventory.items().filter((item) => {
+            if (this.entityNamesMatch(itemName, item, { partialMatch })) {
+                quantityAvailable += item.count;
+                return true;
+            }
+            return false;
+        });
+        return quantityAvailable;
+    }
+
+    /**
      * Drop an inventory Item on the ground.
      * @param {string} itemName
-     * @param {object} [options] Optional parameters
+     * @param {object} options={} Optional parameters
      * @param {boolean} [options.partialMatch=false] Drop items whose name / displayName contains itemName. (Ex. itemName 'stone' will drop 'stone', 'stone_axe', 'stone_sword', etc.)
      * @param {number} [options.quantity=1] The quantity of this Item to drop. To drop all, use -1 or call `dropAllInventoryItem` instead
      * @returns {Promise<void>}
@@ -761,7 +832,7 @@ const TestRGBot = class {
      * Drops all stacks of an Item in the Bot's inventory matching itemName.
      * Alias for `dropInventoryItem(itemName, {quantity: -1})`
      * @param {string} itemName The name or display name of the Item(s) to drop
-     * @param {object} [options] Optional parameters
+     * @param {object} options={} Optional parameters
      * @param {boolean} [options.partialMatch=false] Drop items whose name / displayName contains itemName. (Ex. itemName 'stone' will drop 'stone', 'stone_axe', 'stone_sword', etc.)
      * @returns {Promise<void>}
      */
@@ -771,58 +842,20 @@ const TestRGBot = class {
     }
 
     /**
-     * Return how many of a specific item the Bot currently holds in its inventory.
-     * @param {string} itemName
-     * @param {object} [options] Optional parameters
-     * @param {boolean} [options.partialMatch=false] Count any items whose name / displayName contains itemName. (Ex. 'wooden_axe', 'stone_axe', 'diamond_axe', etc. will all be included in the quantity for itemName 'axe').
-     * @returns {int}
-     */
-    getInventoryItemQuantity(itemName, options = {}) {
-        const partialMatch = options.partialMatch || false;
-        let quantityAvailable = 0;
-        this.#bot.inventory.items().filter((item) => {
-            if (this.entityNamesMatch(itemName, item, { partialMatch })) {
-                quantityAvailable += item.count;
-                return true;
-            }
-            return false;
-        });
-        return quantityAvailable;
-    }
-
-    /**
-     * Returns true if the Bot has one or more of a specified Item in its inventory, or false if it does not.
-     * @param {string} itemName
-     * @param {object} [options] Optional parameters
-     * @param {boolean} [options.partialMatch=false] Check for any items whose name / displayName contains itemName. (Ex. 'wooden_axe', 'stone_axe', 'diamond_axe', etc. will all satisfy itemName 'axe')
-     * @param {number} [options.quantity=1] The minimum amount of this Item the Bot must have
-     * @returns {boolean}
-     */
-    inventoryContainsItem(itemName, options = {}) {
-        const partialMatch = options.partialMatch || false;
-        const quantity = options.quantity || 1;
-        if (quantity < 1) {
-            console.error(`inventoryContainsItem: invalid quantity ${quantity}`);
-            return false;
-        }
-        return this.getInventoryItemQuantity(itemName, {partialMatch}) >= quantity;
-    }
-
-    /**
      * Craft an Item. The Bot must have enough materials to make at least one of these Items, or else recipe lookup will fail.
      * If the recipe requires a crafting station, then a craftingTable entity is required for success.
      * @param {string} itemName The Item to craft
-     * @param {object} [options] Optional parameters
+     * @param {object} options={} Optional parameters
      * @param {number} [options.quantity=1] The number of times to craft this Item. Note that this is NOT the total quantity that should be crafted (Ex. `craftItem('stick', 4)` will result in 16 sticks rather than 4)
-     * @param {Block} [options.craftingTable=null] For recipes that require a crafting table/station. A Block Entity representing the appropriate station within reach of the Bot
+     * @param {Block} [options.craftingTable=undefined] For recipes that require a crafting table/station. A Block Entity representing the appropriate station within reach of the Bot
      * @returns {Promise<Item | null>} The crafted Item or null if crafting failed
      */
     async craftItem(itemName, options = {}) {
         const quantity = options.quantity || 1;
-        const craftingTable = options.craftingTable || null;
+        const craftingTable = options.craftingTable || undefined;
         let result = null;
         const itemId = (this.getItemDefinitionByName(itemName)).id;
-        const recipes = this.#bot.recipesFor(itemId, null, null, craftingTable);
+        const recipes = this.#bot.recipesFor(itemId, null, null, (craftingTable ? craftingTable : null));
         if (recipes.length === 0) {
             this.#log(`Failed to create ${itemName}. Either the item is not valid, or the bot does not possess the required materials to craft it.`);
         }
@@ -880,16 +913,16 @@ const TestRGBot = class {
     /**
      * Withdraws one or more items from a container.
      * @param {Window} containerWindow The open container Window to withdraw items from
-     * @param {object} [options] Optional parameters
-     * @param {string} [options.itemName=null] An Item to withdraw from the container. If not specified, will withdraw all Items
+     * @param {object} options={} Optional parameters
+     * @param {string} [options.itemName=undefined] An Item to withdraw from the container. If not specified, will withdraw all Items
      * @param {boolean} [options.partialMatch=false] Allow partial matches to itemName. For example, 'planks' will match any Item containing 'planks' in its name ('spruce_planks', 'oak_planks', etc.)
-     * @param {number} [options.quantity=null] If itemName is specified, withdraw up to this quantity
+     * @param {number} [options.quantity=undefined] If itemName is specified, withdraw up to this quantity
      * @returns {Promise<void>}
      */
     async withdrawItems(containerWindow, options = {}) {
-        const itemName = options.itemName || null;
+        const itemName = options.itemName || undefined;
         const partialMatch = options.partialMatch || false;
-        const quantity = options.quantity || null;
+        const quantity = options.quantity || undefined;
 
         if (!containerWindow) {
             console.error(`withdrawItems: containerEntity was null or undefined`);
@@ -904,7 +937,7 @@ const TestRGBot = class {
             for (let i = 0; i < 27; i++) {
                 const slot = containerWindow.slots[i];
                 if(slot && (!itemName || this.entityNamesMatch(itemName, slot, {partialMatch}))) {
-                    if(quantity == null) {
+                    if(quantity === undefined) {
                         // if no quantity specified, grab the entire stack
                         await containerWindow.withdraw(slot.type, null, slot.count);
                         quantityCollected += slot.count;
@@ -928,16 +961,16 @@ const TestRGBot = class {
     /**
      * Deposits one or more items into a container.
      * @param {Window} containerWindow The open container Window to deposit items into
-     * @param {object} [options] Optional parameters
-     * @param {string} [options.itemName=null] An Item to deposit into the container. If not specified, will deposit all Items.
+     * @param {object} options={} Optional parameters
+     * @param {string} [options.itemName=undefined] An Item to deposit into the container. If not specified, will deposit all Items.
      * @param {boolean} [options.partialMatch=false] Allow partial matches to itemName. For example, 'planks' will match any Item containing 'planks' in its name ('spruce_planks', 'oak_planks', etc.).
-     * @param {number} [options.quantity=null] If itemName is specified, deposit up to this quantity.
+     * @param {number} [options.quantity=undefined] If itemName is specified, deposit up to this quantity.
      * @returns {Promise<void>}
      */
     async depositItems(containerWindow, options = {}) {
-        const itemName = options.itemName || null;
+        const itemName = options.itemName || undefined;
         const partialMatch = options.partialMatch || false;
-        const quantity = options.quantity || null;
+        const quantity = options.quantity || undefined;
 
         if(!containerWindow) {
             console.error(`depositItems: containerEntity was null or undefined`);
@@ -945,15 +978,15 @@ const TestRGBot = class {
         else {
             let quantityDeposited = 0;
 
-            // mineflayer has a known bug (almost 8 years old...) where the game updates inventory correctly
+            // mineflayer has a known bug where the game updates inventory correctly
             // but mineflayer's internal bot.inventory state is not updated when a Window is open... so we need to
-            // iterate over the actual window slots, we CANNOT rely on bot.inventory for this.
+            // iterate over the actual window slots - we CANNOT rely on bot.inventory for this.
             // The first 27 slots in this window should belong to the chest.
             // The following 27 slots are the bot's inventory, and the last 9 are the bot's hotbar.
             for (let i = 26; i < 63; i++) {
                 const slot = containerWindow.slots[i];
                 if(slot && (!itemName || this.entityNamesMatch(itemName, slot, {partialMatch}))) {
-                    if(quantity == null) {
+                    if(quantity === undefined) {
                         // if no quantity specified, deposit the entire stack
                         await containerWindow.deposit(slot.type, null, slot.count);
                         quantityDeposited += slot.count;

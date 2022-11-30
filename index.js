@@ -50,6 +50,10 @@ function configureBot(realBot) {
       const entity = bot.findEntity({targetName: 'FatalCrux', attackable: true})
       await bot.approachEntity(entity)
     }
+    else if(message === 'item') {
+      const item = bot.getItemDefinitionByName('spruce_log')
+      console.log('ITEM', JSON.stringify(item))
+    }
   })
 }
 
