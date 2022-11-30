@@ -1,6 +1,6 @@
 // This strategy is the simplest example of how to get started with the RGBot.
 // The Bot will run around and gathers Poppies until it has 4 in its inventory.
-function simpleStrategy(rg, bot) {
+function simpleStrategy(rg) {
 
   // This is our main loop. The Bot will invoke this on spawn.
   // goal: collect 4 Poppies
@@ -30,7 +30,7 @@ function simpleStrategy(rg, bot) {
   }
 
   // Have the Bot begin our main loop when it spawns into the game
-  bot.on('spawn', async () => {
+  rg.on('spawn', async () => {
     rg.chat('Hello, I have arrived!');
     startGathering();
   });
