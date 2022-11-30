@@ -552,7 +552,7 @@ const TestRGBot = class {
         const faceVector = options.faceVector || new Vec3(0, 1, 0);
         const reach = options.reach || 5;
 
-        this.#log(`Moving to position ${this.positionString(targetBlock.position)} to place ${blockName}`);
+        this.#log(`Moving to position ${this.vecToString(targetBlock.position)} to place ${blockName}`);
         const pathFunc = async() => {
             await this.#bot.pathfinder.goto(new GoalPlaceBlock(targetBlock.position, this.#bot.world, { range: reach }));
         };
