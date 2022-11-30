@@ -15,7 +15,7 @@ function configureBot(realBot) {
     bot.chat('Hello World');
   })
 
-  routines.intermediateStrategy(bot)
+  routines.advancedStrategy(bot)
 
   // use in-game chat to make the Bot collect or drop wood for you
   bot.on('chat', async function (username, message) {

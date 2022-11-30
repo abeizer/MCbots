@@ -1,7 +1,7 @@
 // This strategy is an advanced example of how to customize movements, place blocks, and craft items with RGBot.
 // The Bot will chop wood until it has 100 points-worth of items in its inventory.
 // (Note: Logs and apples are each worth 1 point)
-function advancedStrategy(rg, bot) {
+function advancedStrategy(rg) {
 
   // This function will make the Bot chop + pick up a Spruce Log.
   async function gatherLog() {
@@ -39,9 +39,9 @@ function advancedStrategy(rg, bot) {
   }
 
   // The bot will announce whenever it collects a log or an apple
-  bot.on('playerCollect', async (collector, collected) => {
+  rg.on('playerCollect', async (collector, collected) => {
     const itemName = rg.getEntityName(collected).toLowerCase();
-    if (collector.username === bot.username && (itemName.includes('log') || itemName === 'apple')) {
+    if (collector.username === rg.mineflayer().username && (itemName.includes('log') || itemName === 'apple')) {
       rg.chat(`I collected a ${itemName}`);
     }
   });
@@ -111,7 +111,7 @@ function advancedStrategy(rg, bot) {
 
   // When the Bot spawns, begin the main gathering loop.
   // Before collecting a log, have the Bot craft axes if it has none.
-  bot.on('spawn', async () => {
+  rg.on('spawn', async () => {
     rg.chat('Hello, I have arrived!');
 
     let logsCollected = rg.getInventoryItemQuantity('spruce_log');
