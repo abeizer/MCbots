@@ -54,8 +54,8 @@ function configureBot(realBot) {
       const item = bot.getItemDefinitionByName('spruce_log')
       console.log('ITEM', JSON.stringify(item))
     }
-    else if(message === 'find duck') {
-      const entity = bot.findEntity({targetName: 'duck'})
+    else if(message === 'find chicken') {
+      const entity = bot.findEntity({targetName: 'chicken'})
       console.log('found entity ', JSON.stringify(entity))
     }
   })
