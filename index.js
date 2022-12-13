@@ -9,15 +9,14 @@ function configureBot(realBot) {
 
   let bot = new TestRGBot(realBot.mineflayer());
   bot.setDebug(true);
-
-  // announce in chat when Bot spawns
-  bot.mineflayer().on('spawn', function() {
-    bot.chat('Hello World');
-  })
-
-  routines.advancedStrategy(bot)
-
-  // use in-game chat to make the Bot collect or drop wood for you
+  //
+  // // announce in chat when Bot spawns
+  // bot.mineflayer().on('spawn', function() {
+  //   bot.chat('Hello World');
+  // })
+  //
+  // // routines.advancedStrategy(bot)
+  //
   bot.on('chat', async function (username, message) {
     if(username === bot.mineflayer().username) return
 
