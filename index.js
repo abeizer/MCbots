@@ -3,9 +3,10 @@ const routines = require('./routines');
 const TestRGBot = require('./TestRgBot');
 
 /**
- * @param {RGBot} realBot
+ * @param { RGBot } realBot
+ * @param { EventEmitter } eventInfoEmitter
  */
-function configureBot(realBot) {
+function configureBot(realBot, eventInfoEmitter) {
 
   let bot = new TestRGBot(realBot.mineflayer());
   bot.setDebug(true);
