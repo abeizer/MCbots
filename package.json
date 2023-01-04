@@ -4,6 +4,7 @@
   "description": "A template for bots in Regression Games Season 0: Ultimate Collector",
   "main": "index.js",
   "types": "types/index.d.ts",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
