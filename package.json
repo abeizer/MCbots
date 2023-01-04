@@ -4,7 +4,6 @@
   "description": "A template for bots in Regression Games Season 0: Ultimate Collector",
   "main": "index.js",
   "types": "types/index.d.ts",
-  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,7 +22,8 @@
     "rg-bot": "^1.0.1",
     "rg-match-info": "^1.0.0",
     "vec3": "^0.1.7",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.4",
+    "@jmerle/rg-bot": "^1.2.1-k"
   },
   "files": [
     "index.js",
