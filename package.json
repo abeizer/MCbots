@@ -23,7 +23,8 @@
     "rg-match-info": "^1.0.0",
     "vec3": "^0.1.7",
     "typescript": "^4.9.4",
-    "@jmerle/rg-bot": "^1.2.1-k"
+    "@jmerle/rg-bot": "^1.2.1-k",
+    "ts-node": "^10.9.1"
   },
   "files": [
     "index.js",
