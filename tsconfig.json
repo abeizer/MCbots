@@ -1,9 +1,0 @@
-{
-  "include": ["index.ts"],
-  "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "allowJs": true,
-    "skipLibCheck": true
-  },
-  "exclude": ["node_modules"]
-}
