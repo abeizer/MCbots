@@ -1,7 +1,9 @@
+import {RGBot} from "@jmerle/rg-bot";
+
 // This strategy is an advanced example of how to customize movements, place blocks, and craft items with RGBot.
 // The Bot will chop wood until it has 100 points-worth of items in its inventory.
 // (Note: Logs and apples are each worth 1 point)
-function advancedStrategy(rg) {
+export default function advancedStrategy(rg: RGBot) {
 
   // This function will make the Bot chop + pick up a Spruce Log.
   async function gatherLog() {
@@ -129,5 +131,3 @@ function advancedStrategy(rg) {
   });
 
 }
-
-module.exports = advancedStrategy;

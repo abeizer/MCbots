@@ -1,6 +1,8 @@
+import {RGBot} from "@jmerle/rg-bot";
+
 // This strategy is an intermediate example of how to craft and equip items, and harvest blocks.
 // The Bot will create a pickaxe and use it to mine the bell in the starting village
-function intermediateStrategy(rg) {
+export default function intermediateStrategy(rg: RGBot) {
 
     // This is our main loop. The Bot will invoke this on spawn.
     // goal: Gather wood, use it to craft a pickaxe, and then dig the Bell in the starting village.
@@ -49,5 +51,3 @@ function intermediateStrategy(rg) {
     });
 
 }
-
-module.exports = intermediateStrategy;

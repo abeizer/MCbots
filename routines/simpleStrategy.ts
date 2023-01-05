@@ -2,7 +2,7 @@ import {RGBot} from "@jmerle/rg-bot";
 
 // This strategy is the simplest example of how to get started with the RGBot.
 // The Bot will run around and gathers Poppies until it has 4 in its inventory.
-function simpleStrategy(rg: RGBot) {
+export default function simpleStrategy(rg: RGBot) {
 
   // This is our main loop. The Bot will invoke this on spawn.
   // goal: collect 4 Poppies
@@ -38,5 +38,3 @@ function simpleStrategy(rg: RGBot) {
   });
 
 }
-
-module.exports = simpleStrategy;
