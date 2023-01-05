@@ -5,4 +5,6 @@ export function configureBot(bot) {
     bot.on('spawn', async () => {
         bot.chat('Hello, I have arrived!');
     });
+
+    require('./routines').simpleStrategy(bot)
 }
