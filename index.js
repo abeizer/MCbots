@@ -1,5 +1,5 @@
 
-export function configureBot(rgBot) {
+export function configureBot(bot) {
     bot.setDebug(true);
 
     bot.on('spawn', async () => {
