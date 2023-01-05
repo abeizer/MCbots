@@ -1,5 +1,5 @@
 {
-  "name": "BotTemplate",
+  "name": "bot-template",
   "version": "1.0.0",
   "description": "A template for bots in Regression Games Season 0: Ultimate Collector",
   "main": "index.js",
@@ -18,7 +18,7 @@
     "prismarine-entity": "^2.1.1",
     "prismarine-item": "^1.11.5",
     "prismarine-viewer": "^1.23.0",
-    "rg-bot": "^1.0.1",
+    "rg-bot": "^1.3.0",
     "rg-match-info": "^1.0.0",
     "vec3": "^0.1.7"
   }

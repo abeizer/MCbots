@@ -1,22 +1,21 @@
 const mineflayer = require('mineflayer')
 const routines = require('./routines');
-const TestRGBot = require('./TestRgBot');
+// const TestRGBot = require('./TestRgBot');
+const RGBot = require('rg-bot')
 
 /**
- * @param {RGBot} realBot
+ * @param {RGBot} bot
+ * @param {EventEmitter} matchInfoEmitter
  */
-function configureBot(realBot) {
+function configureBot(bot, matchInfoEmitter) {
 
-  let bot = new TestRGBot(realBot.mineflayer());
   bot.setDebug(true);
-  //
-  // // announce in chat when Bot spawns
-  // bot.mineflayer().on('spawn', function() {
-  //   bot.chat('Hello World');
-  // })
-  //
-  // // routines.advancedStrategy(bot)
-  //
+
+  // announce in chat when Bot spawns
+  bot.mineflayer().on('spawn', function() {
+    bot.chat('Hello World');
+  })
+
   bot.on('chat', async function (username, message) {
     if(username === bot.mineflayer().username) return
 
