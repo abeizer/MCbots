@@ -1,8 +1,7 @@
 {
   "name": "bot-template",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "A template for bots in Regression Games Season 0: Ultimate Collector",
-  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,10 +22,5 @@
     "vec3": "^0.1.7",
     "typescript": "^4.9.4",
     "@jmerle/rg-bot": "^1.2.1-k"
-  },
-  "files": [
-    "index.js",
-    "lib/",
-    "types/"
-  ]
+  }
 }
