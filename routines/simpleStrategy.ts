@@ -1,4 +1,4 @@
-import {RGBot} from "@jmerle/rg-bot";
+import { RGBot } from "rg-bot";
 
 // This strategy is the simplest example of how to get started with the RGBot.
 // The Bot will run around and gathers Poppies until it has 4 in its inventory.

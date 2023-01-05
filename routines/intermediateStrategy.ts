@@ -1,4 +1,4 @@
-import {RGBot} from "@jmerle/rg-bot";
+import { RGBot } from "rg-bot";
 
 // This strategy is an intermediate example of how to craft and equip items, and harvest blocks.
 // The Bot will create a pickaxe and use it to mine the bell in the starting village

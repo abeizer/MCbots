@@ -1,4 +1,4 @@
-import {RGBot} from "@jmerle/rg-bot";
+import { RGBot } from "rg-bot";
 
 // This strategy is an advanced example of how to customize movements, place blocks, and craft items with RGBot.
 // The Bot will chop wood until it has 100 points-worth of items in its inventory.

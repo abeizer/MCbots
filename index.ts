@@ -1,13 +1,8 @@
-import { RGBot } from "@jmerle/rg-bot";
+import { RGBot } from "rg-bot";
+import { EventEmitter } from "events";
 import { simpleStrategy } from './routines';
 
-export function configureBot(bot: RGBot): void {
+export function configureBot(bot: RGBot, matchInfoEmitter: EventEmitter): void {
     bot.setDebug(true);
-
-    bot.on('spawn', async () => {
-        bot.chat('Hello, I have arrived!');
-    });
-
     simpleStrategy(bot)
-
 }
