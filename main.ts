@@ -1,4 +1,4 @@
-import { RGBot } from "@jmerle/rg-bot";
+import { RGBot } from "./lib";
 
 export function configureBot(bot: RGBot): void {
     bot.setDebug(true);
