@@ -64,7 +64,7 @@ function configureBot(bot, matchInfoEmitter) {
     else if(message === 'apprach arena') {
       const coords = new Vec3(113, 63, -388)
       const goal = new GoalNear(coords.x, coords.y, coords.z, 5)
-      await bot.mineflayer().pathfinder.goTo(goal)
+      await bot.mineflayer().pathfinder.goto(goal)
     }
   })
 }
