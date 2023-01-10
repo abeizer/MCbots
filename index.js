@@ -2,6 +2,9 @@ const mineflayer = require('mineflayer')
 const routines = require('./routines');
 // const TestRGBot = require('./TestRgBot');
 const RGBot = require('rg-bot')
+const {Vec3} = require("vec3");
+const { pathfinder, Movements } = require('mineflayer-pathfinder');
+const { GoalNear, GoalPlaceBlock, GoalLookAtBlock, GoalXZ, GoalInvert, GoalFollow } = require('mineflayer-pathfinder').goals
 
 /**
  * @param {RGBot} bot
@@ -57,6 +60,11 @@ function configureBot(bot, matchInfoEmitter) {
     else if(message === 'find chicken') {
       const entity = bot.findEntity({targetName: 'chicken'})
       console.log('found entity ', JSON.stringify(entity))
+    }
+    else if(message === 'apprach arena') {
+      const coords = new Vec3(113, 63, -388)
+      const goal = new GoalNear(coords.x, coords.y, coords.z, 5)
+      await bot.mineflayer().pathfinder.goTo(goal)
     }
   })
 }
