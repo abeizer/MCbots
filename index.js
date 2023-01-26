@@ -25,7 +25,7 @@ function configureBot(bot, matchInfoEmitter) {
     if(username === bot.mineflayer().username) return
 
     if(message === 'get flag') {
-      const flag = bot.findEntity({targetName: "WHITE_BANNER"})
+      const flag = bot.findBlock("WHITE_BANNER")
       await bot.approachEntity(flag, {reach: 0}) // stand right on top of the flag
     }
     else if (message === 'go to base') {
