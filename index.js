@@ -33,6 +33,15 @@ function configureBot(bot, matchInfoEmitter) {
       const goal = new GoalNear(coords.x, coords.y, coords.z, 0)
       await bot.mineflayer().pathfinder.goto(goal)
     }
+    else if(message === 'drop flag') {
+      await bot.dropAllInventoryItem("_banner", {partialMatch: true})
+    }
+    else if(message === 'f') {
+      bot.chat("/ff")
+    }
+    else if(message === 'dc') {
+      bot.mineflayer().quit("ta ta for now!")
+    }
   })
 }
 
