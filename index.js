@@ -28,10 +28,10 @@ function configureBot(bot, matchInfoEmitter) {
   bot.mineflayer().on('blockUpdate:(96.0, 63.0, -385.0)', (oldBlock, newBlock) => {
     console.log("BLOCK UPDATE EVENT: ", oldBlock, newBlock)
   })
-
-  bot.mineflayer().on('entitySpawn', (entity) => {
-    console.log("ENTITY SPAWN EVENT: ", entity)
-  })
+  //
+  // bot.mineflayer().on('entitySpawn', (entity) => {
+  //   console.log("ENTITY SPAWN EVENT: ", entity)
+  // })
 
   bot.on('chat', async function (username, message) {
     if(username === bot.mineflayer().username) return
