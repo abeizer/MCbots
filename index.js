@@ -25,7 +25,7 @@ function configureBot(bot, matchInfoEmitter) {
     console.log("COLLECT EVENT: ", collector, collected)
   })
 
-  bot.mineflayer().on('blockUpdate', (oldBlock, newBlock) => {
+  bot.mineflayer().on('blockUpdate:(96, 63, -385)', (oldBlock, newBlock) => {
     console.log("BLOCK UPDATE EVENT: ", oldBlock, newBlock)
   })
 
