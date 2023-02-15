@@ -21,6 +21,18 @@ function configureBot(bot, matchInfoEmitter) {
     bot.chat('Hello World');
   })
 
+  bot.mineflayer().on('playerCollect', (collector, collected) => {
+    console.log("COLLECT EVENT: ", collector, collected)
+  })
+
+  bot.mineflayer().on('blockUpdate', (oldBlock, newBlock) => {
+    console.log("BLOCK UPDATE EVENT: ", oldBlock, newBlock)
+  })
+
+  bot.mineflayer().on('entitySpawn', (entity) => {
+    console.log("ENTITY UPDATE EVENT: ", entity)
+  })
+
   bot.on('chat', async function (username, message) {
     if(username === bot.mineflayer().username) return
 
