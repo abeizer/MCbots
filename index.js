@@ -16,20 +16,24 @@ function configureBot(bot, matchInfoEmitter) {
   bot.allowParkour(true)
   bot.allowDigWhilePathing(false)
 
+
+
   // announce in chat when Bot spawns
   bot.mineflayer().on('spawn', function() {
     bot.chat('Hello World');
+    console.log("MATCH INFO:", JSON.stringify(bot.matchInfo()))
+    console.log("MATCH INFO PLAYERS:", JSON.stringify(bot.matchInfo().players))
   })
-
-  bot.mineflayer().on('playerCollect', (collector, collected) => {
-    console.log("COLLECT EVENT: ", collector, collected)
-  })
-
-  bot.mineflayer().on('blockUpdate', (oldBlock, newBlock) => {
-    if(newBlock.position.equals(new Vec3(96,63,-386))) {
-      console.log("BLOCK UPDATE EVENT: ", oldBlock, newBlock)
-    }
-  })
+  //
+  // bot.mineflayer().on('playerCollect', (collector, collected) => {
+  //   console.log("COLLECT EVENT: ", collector, collected)
+  // })
+  //
+  // bot.mineflayer().on('blockUpdate', (oldBlock, newBlock) => {
+  //   if(newBlock.position.equals(new Vec3(96,63,-386))) {
+  //     console.log("BLOCK UPDATE EVENT: ", oldBlock, newBlock)
+  //   }
+  // })
   //
   // bot.mineflayer().on('entitySpawn', (entity) => {
   //   console.log("ENTITY SPAWN EVENT: ", entity)
