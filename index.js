@@ -19,7 +19,7 @@ function configureBot(bot, matchInfoEmitter) {
 
 
   // announce in chat when Bot spawns
-  bot.mineflayer().on('spawn', function() {
+  bot.on('match_start', function() {
     bot.chat('Hello World');
     console.log("MATCH INFO:", JSON.stringify(bot.matchInfo()))
     console.log("MATCH INFO PLAYERS:", JSON.stringify(bot.matchInfo().players))
