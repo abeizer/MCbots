@@ -25,12 +25,12 @@ function configureBot(bot, matchInfoEmitter) {
     console.log("COLLECT EVENT: ", collector, collected)
   })
 
-  bot.mineflayer().on('blockUpdate:(96, 63, -385)', (oldBlock, newBlock) => {
+  bot.mineflayer().on('blockUpdate:(96.0, 63.0, -385.0)', (oldBlock, newBlock) => {
     console.log("BLOCK UPDATE EVENT: ", oldBlock, newBlock)
   })
 
   bot.mineflayer().on('entitySpawn', (entity) => {
-    console.log("ENTITY UPDATE EVENT: ", entity)
+    console.log("ENTITY SPAWN EVENT: ", entity)
   })
 
   bot.on('chat', async function (username, message) {
