@@ -25,8 +25,10 @@ function configureBot(bot, matchInfoEmitter) {
     console.log("COLLECT EVENT: ", collector, collected)
   })
 
-  bot.mineflayer().on('blockUpdate:(96,63,-386)', (oldBlock, newBlock) => {
-    console.log("BLOCK UPDATE EVENT: ", oldBlock, newBlock)
+  bot.mineflayer().on('blockUpdate', (oldBlock, newBlock) => {
+    if(newBlock.position.equals(Vec3(96,63,-386))) {
+      console.log("BLOCK UPDATE EVENT: ", oldBlock, newBlock)
+    }
   })
   //
   // bot.mineflayer().on('entitySpawn', (entity) => {
