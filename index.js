@@ -26,7 +26,7 @@ function configureBot(bot, matchInfoEmitter) {
   })
 
   bot.mineflayer().on('blockUpdate', (oldBlock, newBlock) => {
-    if(newBlock.position.equals(Vec3(96,63,-386))) {
+    if(newBlock.position.equals(new Vec3(96,63,-386))) {
       console.log("BLOCK UPDATE EVENT: ", oldBlock, newBlock)
     }
   })
