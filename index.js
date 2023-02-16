@@ -19,11 +19,7 @@ function configureBot(bot, matchInfoEmitter) {
 
   // announce in chat when Bot spawns
   bot.on('spawn', async function() {
-    const entity = bot.findEntity({targetName: "R_Digger"})
-    bot.followEntity(entity)
-    while(entity.isValid) {
-      await bot.attackEntity(entity)
-    }
+    //
   })
   //
   // bot.mineflayer().on('playerCollect', (collector, collected) => {
@@ -60,6 +56,17 @@ function configureBot(bot, matchInfoEmitter) {
     }
     else if(message === 'dc') {
       bot.mineflayer().quit("ta ta for now!")
+    }
+    else if(message === 'lava') {
+      const lava = bot.findBlock("Lava")
+      await bot.approachBlock(lava, {reach: 1})
+    }
+    else if(message === 'attack') {
+      const entity = bot.findEntity({targetName: "R_Digger"})
+      bot.followEntity(entity)
+      while(entity.isValid) {
+        await bot.attackEntity(entity)
+      }
     }
   })
 }
