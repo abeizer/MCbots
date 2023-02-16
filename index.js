@@ -17,12 +17,13 @@ function configureBot(bot, matchInfoEmitter) {
   bot.allowDigWhilePathing(false)
 
 
-
   // announce in chat when Bot spawns
-  bot.on('match_started', function() {
-    bot.chat('Hello World');
-    console.log("MATCH INFO:", JSON.stringify(bot.matchInfo()))
-    console.log("MATCH INFO PLAYERS:", JSON.stringify(bot.matchInfo().players))
+  bot.on('spawn', async function() {
+    const entity = bot.findEntity({targetName: "R_Digger"})
+    bot.followEntity(entity)
+    while(entity.isValid) {
+      await bot.attackEntity(entity)
+    }
   })
   //
   // bot.mineflayer().on('playerCollect', (collector, collected) => {
