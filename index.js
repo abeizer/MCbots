@@ -42,6 +42,7 @@ function configureBot(bot, matchInfoEmitter) {
     if(message === 'get flag') {
       const flag = bot.findBlock("white_banner", {maxDistance: 100})
       await bot.approachBlock(flag, {reach: 0}) // stand right on top of the flag
+      //
     }
     else if (message === 'go to base') {
       const coords = new Vec3(160, 63, -386)
