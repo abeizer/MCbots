@@ -40,7 +40,7 @@ function configureBot(bot, matchInfoEmitter) {
     if(username === bot.mineflayer().username) return
 
     if(message === 'get flag') {
-      const flag = bot.findBlock("white_banner", {maxDistance: 100})
+      const flag = bot.findBlock("white_banner", {maxDistance: 150})
       await bot.approachBlock(flag, {reach: 0}) // stand right on top of the flag
       //
     }
