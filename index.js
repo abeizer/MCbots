@@ -40,9 +40,11 @@ function configureBot(bot, matchInfoEmitter) {
     if(username === bot.mineflayer().username) return
 
     if(message === 'get flag') {
-      const flag = bot.findBlock("white_banner", {maxDistance: 150})
-      await bot.approachBlock(flag, {reach: 0}) // stand right on top of the flag
+      // const flag = bot.findBlock("white_banner", {maxDistance: 150})
+      // await bot.approachBlock(flag, {reach: 0}) // stand right on top of the flag
       //
+      const goal =  new GoalNear(96.0, 63.0, -386, 0)
+      bot.mineflayer().pathfinder.goto(goal)
     }
     else if (message === 'go to base') {
       const coords = new Vec3(160, 63, -386)
