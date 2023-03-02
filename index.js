@@ -52,6 +52,9 @@ function configureBot(bot, matchInfoEmitter) {
     else if(message === 'drop flag') {
       await bot.dropAllInventoryItem("_banner", {partialMatch: true})
     }
+    else if(message === 'drop all') {
+      await bot.dropAllInventoryItems()
+    }
     else if(message === 'f') {
       bot.chat("/ff")
     }
