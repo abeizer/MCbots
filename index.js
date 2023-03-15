@@ -15,6 +15,7 @@ function configureBot(bot, matchInfoEmitter) {
   bot.setDebug(true);
   bot.allowParkour(true)
   bot.allowDigWhilePathing(false)
+  bot.mineflayer().pathfinder.blocksToAvoid.clear()
 
 
   // announce in chat when Bot spawns
