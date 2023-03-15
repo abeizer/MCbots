@@ -64,8 +64,9 @@ function configureBot(bot, matchInfoEmitter) {
       bot.mineflayer().quit("ta ta for now!")
     }
     else if(message === 'lava') {
-      const lava = bot.findBlock("Lava")
-      await bot.approachBlock(lava, {reach: 1})
+      const coords = new Vec3(109, 60, -399)
+      const goal = new GoalNear(coords.x, coords.y, coords.z, 0)
+      await bot.mineflayer().pathfinder.goto(goal)
     }
     else if(message === 'attack') {
       const entity = bot.findEntity({targetName: "R_Digger"})
