@@ -65,9 +65,7 @@ function configureBot(bot, matchInfoEmitter) {
       bot.mineflayer().quit("ta ta for now!")
     }
     else if(message === 'lava') {
-      const coords = new Vec3(109, 60, -399)
-      const goal = new GoalNear(coords.x, coords.y, coords.z, 0)
-      await bot.mineflayer().pathfinder.goto(goal)
+      await goToLava(bot)
     }
     else if(message === 'attack') {
       const entity = bot.findEntity({targetName: "R_Digger"})
@@ -77,6 +75,21 @@ function configureBot(bot, matchInfoEmitter) {
       }
     }
   })
+}
+
+/**
+ * @param {RGBot} bot
+ */
+async function goToLava(bot) {
+  try {
+    const coords = new Vec3(109, 60, -399)
+    const goal = new GoalNear(coords.x, coords.y, coords.z, 0)
+    await bot.mineflayer().pathfinder.goto(goal)
+  }
+  catch(err) {
+    bot.mineflayer().pathfinder.stop()
+    bot.mineflayer().pathfinder.setGoal(null)
+  }
 }
 
 
